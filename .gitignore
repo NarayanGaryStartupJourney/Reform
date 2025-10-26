@@ -43,6 +43,7 @@ android/
 .vscode/
 .idea/
 
+
 # Logs
 logs
 *.log
