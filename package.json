@@ -1,18 +1,21 @@
 {
-  "name": "fitness-ai-form-analyzer",
+  "name": "reform-ai-trainer",
   "version": "1.0.0",
-  "description": "AI-powered fitness form analyzer with real-time pose detection and coaching",
+  "description": "Reform - AI Personal Trainer for all workouts with real-time form analysis and coaching",
   "main": "index.js",
   "keywords": [
     "fitness",
     "ai",
+    "personal-trainer",
     "pose-detection",
+    "form-analysis",
+    "workout-coaching",
     "react-native",
     "expo",
     "tensorflow",
     "openai"
   ],
-  "author": "FitnessAI Team",
+  "author": "Reform Team",
   "license": "MIT",
   "scripts": {
     "start": "expo start",
@@ -35,6 +38,7 @@
     "@tensorflow-models/pose-detection": "^2.1.3",
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-react-native": "1.0.0",
+    "@types/react": "~19.1.10",
     "expo": "~54.0.0",
     "expo-camera": "~17.0.7",
     "expo-dev-client": "~6.0.12",
@@ -47,7 +51,8 @@
     "openai": "^4.104.0",
     "react": "19.1.0",
     "react-native": "0.81.4",
-    "react-native-fs": "^2.20.0"
+    "react-native-fs": "^2.20.0",
+    "typescript": "~5.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

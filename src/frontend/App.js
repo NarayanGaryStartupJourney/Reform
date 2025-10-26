@@ -17,7 +17,7 @@ export default function App() {
   const [movementIntensity, setMovementIntensity] = useState(0);
   const [fitnessMove, setFitnessMove] = useState('none');
   const [lastSpokenTip, setLastSpokenTip] = useState('');
-  const [currentTip, setCurrentTip] = useState('🏀 Get ready to start shooting! Position yourself below the basket.');
+  const [currentTip, setCurrentTip] = useState('💪 Get ready to start your workout! Position yourself in front of the camera.');
   const [movementHistory, setMovementHistory] = useState([]);
   const [tensorFlowReady, setTensorFlowReady] = useState(false);
   const [basketballMovement, setBasketballMovement] = useState(BASKETBALL_MOVEMENTS.SHOOTING);
@@ -60,25 +60,25 @@ export default function App() {
     
     if (!isAnalyzing) {
       console.log('💡 [TIPS] Not analyzing - setting ready message');
-      setCurrentTip('🏀 Get ready to start shooting! Position yourself below the basket.');
+      setCurrentTip('💪 Get ready to start your workout! Position yourself in front of the camera.');
       lastTipRef.current = '';
       return;
     }
     
-    // Immediate basketball-specific feedback
+    // Immediate workout feedback
     const immediateTips = {
-      'idle': '🏀 Get in shooting position - feet shoulder-width apart!',
-      'moving': '🏀 Good movement! Keep your elbow under the ball.',
-      'active': '🏀 Strong motion! Focus on your shooting technique.',
-      'explosive': '🏀 Powerful shot! Maintain that follow-through.',
-      'rhythmic': '🏀 Perfect rhythm! Keep your shooting form consistent.',
-      'sustained': '🏀 Strong hold! Keep your shooting hand steady.',
-      'controlled': '🏀 Precise control! Focus on your elbow positioning.'
+      'idle': '💪 Get in position - feet shoulder-width apart!',
+      'moving': '💪 Good movement! Keep your form steady.',
+      'active': '💪 Strong motion! Focus on your technique.',
+      'explosive': '💪 Powerful movement! Maintain that control.',
+      'rhythmic': '💪 Perfect rhythm! Keep your form consistent.',
+      'sustained': '💪 Strong hold! Keep your core engaged.',
+      'controlled': '💪 Precise control! Focus on your positioning.'
     };
     
            // Show immediate feedback for basketball shooting movement
            if (movementIntensity > 1.5 || movement !== 'idle') {
-             const immediateTip = immediateTips[movement] || immediateTips[fitnessMove] || '🏀 Keep up the great shooting!';
+             const immediateTip = immediateTips[movement] || immediateTips[fitnessMove] || '💪 Keep up the great work!';
              console.log('💡 [TIPS] Immediate tip selected:', immediateTip);
              
              if (immediateTip !== lastTipRef.current) {
@@ -172,7 +172,7 @@ export default function App() {
   if (!permission) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>💪 BasketballFormAnalyzer</Text>
+        <Text style={styles.title}>💪 Reform</Text>
         <Text style={styles.subtitle}>Loading...</Text>
       </View>
     );
@@ -181,7 +181,7 @@ export default function App() {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>💪 BasketballFormAnalyzer</Text>
+        <Text style={styles.title}>💪 Reform</Text>
         <Text style={styles.subtitle}>Camera permission needed</Text>
         <TouchableOpacity style={styles.button} onPress={requestPermission}>
           <Text style={styles.buttonText}>Grant Camera Permission</Text>
@@ -268,7 +268,7 @@ export default function App() {
       )}
       
       <View style={styles.overlay}>
-        <Text style={styles.title}>💪 BasketballFormAnalyzer</Text>
+        <Text style={styles.title}>💪 Reform</Text>
         <Text style={styles.subtitle}>
           {!tensorFlowReady ? 'Initializing TensorFlow...' : 
            isAnalyzing ? 'Analyzing...' : 'Ready to analyze'}

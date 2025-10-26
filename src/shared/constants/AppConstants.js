@@ -1,13 +1,13 @@
 /**
- * Application Constants for Basketball Form Analyzer
+ * Application Constants for Reform - AI Personal Trainer
  * Centralized configuration and constant values
  */
 
 export const APP_CONFIG = {
-  NAME: 'Basketball Form Analyzer',
+  NAME: 'Reform',
   VERSION: '1.0.0',
-  DESCRIPTION: 'AI-powered basketball shooting form analysis',
-  AUTHOR: 'Narayan Manivannan'
+  DESCRIPTION: 'AI Personal Trainer for all workouts with real-time form analysis',
+  AUTHOR: 'Reform Team'
 };
 
 export const MOVEMENT_THRESHOLDS = {

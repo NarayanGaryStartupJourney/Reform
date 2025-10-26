@@ -1,10 +1,11 @@
-# 🏀 Basketball Form Analyzer - Complete Documentation
+# 💪 Reform - AI Personal Trainer - Complete Documentation
 
 ## 📖 Table of Contents
 - [Quick Start](#-quick-start)
 - [LLM Setup](#-llm-setup)
 - [Performance Optimizations](#-performance-optimizations)
 - [Architecture](#-architecture)
+- [Supported Workouts](#-supported-workouts)
 - [Development](#-development)
 - [Troubleshooting](#-troubleshooting)
 
@@ -20,7 +21,7 @@
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd FitnessAIFormAnalyzer
+cd reform-ai-trainer
 
 # Install dependencies
 npm install
@@ -32,7 +33,7 @@ npx expo start --go --port 8083
 ### Running on Device
 1. **Scan QR Code** with your iPhone camera or Expo Go app
 2. **Grant permissions** for camera and microphone
-3. **Start analyzing** your basketball shooting form!
+3. **Start analyzing** your workout form!
 
 ## 🤖 LLM Setup
 
@@ -74,7 +75,7 @@ npx expo start --go --port 8083
 - **AI-powered coaching** with OpenAI GPT-4
 - **Audio feedback** with text-to-speech
 - **Visual overlay** showing joint positions
-- **Shooting phase detection** (Setup, Release, Follow-through)
+- **Multi-workout support** for all exercise types
 
 ## 🏗️ Architecture
 
@@ -99,12 +100,49 @@ src/
 - **App.js**: Main React Native component
 - **PoseOverlay.js**: Visual skeleton overlay
 - **videoInput.js**: Camera and movement detection
-- **basketballFormAnalyzer.js**: Basketball-specific analysis
+- **basketballFormAnalyzer.js**: Multi-workout analysis
 - **ErrorHandler.js**: Centralized error management
+
+## 💪 Supported Workouts
+
+### Strength Training
+- **Squats** - Form analysis and depth tracking
+- **Deadlifts** - Back position and lifting technique
+- **Bench Press** - Arm positioning and bar path
+- **Overhead Press** - Shoulder stability and form
+- **Rows** - Back engagement and posture
+
+### Cardio & HIIT
+- **Running** - Stride analysis and posture
+- **Cycling** - Pedaling technique and form
+- **Burpees** - Full-body movement analysis
+- **Mountain Climbers** - Core stability and form
+- **Jumping Jacks** - Coordination and timing
+
+### Yoga & Pilates
+- **Downward Dog** - Alignment and posture
+- **Warrior Poses** - Balance and stability
+- **Plank** - Core engagement and form
+- **Tree Pose** - Balance and focus
+- **Bridge Pose** - Hip alignment and strength
+
+### Sports & Activities
+- **Basketball** - Shooting form and technique
+- **Tennis** - Serve and stroke analysis
+- **Golf** - Swing mechanics and posture
+- **Boxing** - Punching technique and stance
+- **Dancing** - Rhythm and movement quality
+
+### Functional Fitness
+- **CrossFit** - Olympic lifting techniques
+- **Calisthenics** - Bodyweight exercise form
+- **Kettlebell** - Swing and lifting techniques
+- **TRX** - Suspension training form
+- **Plyometrics** - Jumping and landing mechanics
 
 ## 🛠️ Development
 
-### Adding New Features
+### Adding New Workout Types
 1. **Choose appropriate module** (frontend, core, shared)
 2. **Create files** in correct folder
 3. **Add error handling** and validation
@@ -239,4 +277,4 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Happy Coding! 🏀✨**
+**Ready to perfect your form? Let's get started! 💪✨**

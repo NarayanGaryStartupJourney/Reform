@@ -1,6 +1,6 @@
-# 🏀 Basketball Form Analyzer
+# 💪 Reform - AI Personal Trainer
 
-AI-powered basketball shooting form analysis with real-time pose detection and coaching feedback.
+AI-powered personal trainer for all workouts with real-time form analysis and coaching feedback.
 
 [![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
@@ -9,11 +9,12 @@ AI-powered basketball shooting form analysis with real-time pose detection and c
 
 ## ✨ Features
 
-- 🎯 **Real-time Pose Detection** - TensorFlow.js + MoveNet
-- 🤖 **AI-Powered Coaching** - OpenAI GPT-4 integration  
-- 🔊 **Audio Feedback** - Text-to-speech coaching tips
-- 👁️ **Visual Overlay** - Real-time skeleton visualization
-- 🏀 **Basketball-Specific** - Focused on shooting technique
+- 🎯 **Real-time Pose Detection** - TensorFlow.js + MoveNet for all exercises
+- 🤖 **AI-Powered Coaching** - OpenAI GPT-4 integration for personalized feedback
+- 🔊 **Audio Feedback** - Text-to-speech coaching tips during workouts
+- 👁️ **Visual Overlay** - Real-time skeleton visualization and form analysis
+- 💪 **All Workouts** - Supports strength training, cardio, yoga, sports, and more
+- 📊 **Form Analysis** - Detailed technique scoring and improvement suggestions
 
 ## 🚀 Quick Start
 
@@ -68,6 +69,15 @@ npm run type-check
 - **Android 8+** with Expo Go
 - **Camera & Microphone** permissions required
 
+## 🎯 Supported Workouts
+
+- **Strength Training** - Squats, deadlifts, bench press, etc.
+- **Cardio** - Running, cycling, HIIT workouts
+- **Yoga & Pilates** - Poses and form correction
+- **Sports** - Basketball, tennis, golf, etc.
+- **Functional Fitness** - CrossFit, calisthenics
+- **And much more!**
+
 ## 🎯 Performance
 
 - **90% reduction** in API calls
@@ -88,4 +98,4 @@ MIT License - see [LICENSE](LICENSE) file
 
 ---
 
-**Ready to improve your basketball form? Let's go! 🏀✨**
+**Ready to perfect your form? Let's get started! 💪✨**
