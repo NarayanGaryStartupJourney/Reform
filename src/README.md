@@ -1,6 +1,6 @@
-# Basketball Form Analyzer - Clean Architecture
+# Reform - AI Personal Trainer - Clean Architecture
 
-This is the reorganized codebase for the Basketball Form Analyzer app, following clean architecture principles.
+This is the reorganized codebase for the Reform AI Personal Trainer app, following clean architecture principles.
 
 ## 📁 Folder Structure
 
@@ -28,7 +28,7 @@ src/
 │   ├── audio/               # Audio processing
 │   │   └── audioOutput.js   # Audio feedback system
 │   ├── pose/                # Pose detection and analysis
-│   │   └── basketballFormAnalyzer.js  # Basketball-specific analysis
+│   │   └── basketballFormAnalyzer.js  # Multi-workout form analysis
 │   └── llm/                 # LLM integration
 │       ├── config.js        # LLM configuration
 │       ├── llmArchitecture.js  # LLM architecture
@@ -84,8 +84,8 @@ src/
 ### **Core Modules**
 - **Video Processing**: Camera integration, movement detection, pose estimation
 - **Audio System**: Text-to-speech feedback, audio configuration
-- **Pose Analysis**: Basketball-specific form analysis, technique scoring
-- **LLM Integration**: AI-powered feedback generation
+- **Pose Analysis**: Multi-workout form analysis, technique scoring for all exercise types
+- **LLM Integration**: AI-powered personalized coaching feedback
 
 ### **Shared Utilities**
 - **Error Handling**: Comprehensive error management

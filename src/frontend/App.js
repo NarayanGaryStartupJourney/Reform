@@ -76,7 +76,7 @@ export default function App() {
       'controlled': '💪 Precise control! Focus on your positioning.'
     };
     
-           // Show immediate feedback for basketball shooting movement
+           // Show immediate feedback for any workout movement
            if (movementIntensity > 1.5 || movement !== 'idle') {
              const immediateTip = immediateTips[movement] || immediateTips[fitnessMove] || '💪 Keep up the great work!';
              console.log('💡 [TIPS] Immediate tip selected:', immediateTip);
@@ -98,23 +98,23 @@ export default function App() {
       clearTimeout(tipUpdateTimeoutRef.current);
     }
     
-           // Only call LLM for basketball shooting movements and after longer delay
+           // Only call LLM for significant movements and after longer delay
            if (movementIntensity > 2.0 || fitnessMove !== 'none') {
              console.log('💡 [TIPS] Scheduling AI tip generation in 2 seconds (intensity:', movementIntensity, 'fitnessMove:', fitnessMove, ')');
       tipUpdateTimeoutRef.current = setTimeout(async () => {
         console.log('🤖 [AI] Starting AI tip generation...');
         try {
-          // Always use basketball-specific analysis for this basketball app
+          // Use workout-specific analysis with pose detection
           let aiTip;
-          console.log('🏀 [BASKETBALL] Using basketball-specific analysis (pose keypoints:', poseData?.summary?.highConfidenceKeypoints || 0, ')');
+          console.log('🏀 [WORKOUT] Using workout-specific analysis (pose keypoints:', poseData?.summary?.highConfidenceKeypoints || 0, ')');
           const basketballResult = await getBasketballShootingTip(poseData, movementIntensity, movementHistory, basketballMovement);
           aiTip = basketballResult.tip;
           setTechniqueScore(basketballResult.formScore);
           
-          // Update basketball movement type
+          // Update detected movement type
           const detectedMovement = detectBasketballMovement(movementIntensity, movementHistory, poseData);
           if (detectedMovement !== basketballMovement) {
-            console.log('🏀 [BASKETBALL] Movement type changed:', basketballMovement, '->', detectedMovement);
+            console.log('🏀 [WORKOUT] Movement type changed:', basketballMovement, '->', detectedMovement);
             setBasketballMovement(detectedMovement);
           }
           
@@ -151,20 +151,20 @@ export default function App() {
     lastSpokenTip,
     setLastSpokenTip,
     async () => {
-      console.log('🏀 [AUDIO] Audio feedback function called - isAnalyzing:', isAnalyzing);
-      // Use basketball-specific tips for audio feedback
+      console.log('🎧 [AUDIO] Audio feedback function called - isAnalyzing:', isAnalyzing);
+      // Use workout-specific tips for audio feedback
       if (isAnalyzing) {
         try {
-          console.log('🏀 [AUDIO] Getting basketball tip for audio feedback...');
+          console.log('🎧 [AUDIO] Getting workout-specific tip for audio feedback...');
                  const basketballResult = await getBasketballShootingTip(poseData, movementIntensity, movementHistory, basketballMovement);
-                 console.log('🏀 [AUDIO] Basketball technique tip received:', basketballResult.tip);
+                 console.log('🎧 [AUDIO] Workout technique tip received:', basketballResult.tip);
                  return basketballResult.tip;
         } catch (error) {
-          console.log('🏀 [AUDIO] Basketball tip error, using fallback:', error);
+          console.log('🎧 [AUDIO] Workout tip error, using fallback:', error);
           return getFitnessTip(fitnessMove, movement, poseData);
         }
       }
-      console.log('🏀 [AUDIO] Not analyzing, using fitness tip');
+      console.log('🎧 [AUDIO] Not analyzing, using fitness tip');
       return getFitnessTip(fitnessMove, movement, poseData);
     }
   );
