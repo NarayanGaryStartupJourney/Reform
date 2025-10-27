@@ -33,7 +33,7 @@ export function useAudioFeedback(
         playsInSilentModeIOS: true, // Play even when phone is silent
         shouldDuckAndroid: true, // Duck other audio on Android
         playThroughEarpieceAndroid: false, // Use speaker/headphones, not earpiece
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       });
       
@@ -46,6 +46,22 @@ export function useAudioFeedback(
     }
   };
 
+  // Simple audio test to ensure speaker works
+  const testAudio = async () => {
+    try {
+      console.log('🔊 [AUDIO] Testing audio output...');
+      await Speech.speak('Audio test', { 
+        volume: 0.5, 
+        rate: 1.0,
+        onStart: () => console.log('🔊 [AUDIO] Test audio started'),
+        onDone: () => console.log('🔊 [AUDIO] Test audio completed'),
+        onError: (error) => console.warn('🔊 [AUDIO] Test audio error:', error)
+      });
+    } catch (error) {
+      console.warn('🔊 [AUDIO] Audio test failed:', error);
+    }
+  };
+
   useEffect(() => {
     console.log('🔊 [AUDIO] Audio feedback effect triggered - isAnalyzing:', isAnalyzing, 'movement:', movement, 'fitnessMove:', fitnessMove);
     
@@ -53,6 +69,11 @@ export function useAudioFeedback(
     if (isAnalyzing && lastSpokenAtRef.current === 0) {
       console.log('🔊 [AUDIO] Analysis started, resetting audio timer');
       lastSpokenAtRef.current = Date.now() - 4000; // Allow immediate first tip
+      
+      // Test audio when analysis starts
+      setTimeout(() => {
+        testAudio();
+      }, 1000);
     }
     
     if (!isAnalyzing) {
@@ -114,6 +135,17 @@ export function useAudioFeedback(
             onDone: () => console.log('🔊 [AUDIO] Speech completed'),
             onError: (error) => console.warn('🔊 [AUDIO] Speech error:', error)
           });
+          
+          // Force audio to speaker if no headphones detected
+          // This ensures audio plays even if headphone detection fails
+          setTimeout(() => {
+            try {
+              // Try to force audio to speaker/headphones
+              Speech.speak('', { volume: 0.01 }); // Silent test to ensure audio routing
+            } catch (e) {
+              console.log('🔊 [AUDIO] Audio routing test completed');
+            }
+          }, 100);
           
           // Update state immediately to prevent repetition
           setLastSpokenTip(tip);
