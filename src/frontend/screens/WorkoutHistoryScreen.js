@@ -108,15 +108,17 @@ const WorkoutHistoryScreen = ({ onBack }) => {
             {achievement.description}
           </Text>
           {!isUnlocked && (
-            <View style={historyStyles.progressBar}>
-              <View 
-                style={[
-                  historyStyles.progressFill,
-                  { width: `${progress}%` }
-                ]} 
-              />
-            </View>
-            <Text style={historyStyles.progressText}>{progress}%</Text>
+            <>
+              <View style={historyStyles.progressBar}>
+                <View 
+                  style={[
+                    historyStyles.progressFill,
+                    { width: `${progress}%` }
+                  ]} 
+                />
+              </View>
+              <Text style={historyStyles.progressText}>{progress}%</Text>
+            </>
           )}
         </View>
         {isUnlocked && (
