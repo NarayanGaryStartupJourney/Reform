@@ -9,6 +9,7 @@ import React from 'react';
 function App() {
   return (
     <div className="App">
+        {/* TODO: Add one button to upload a video file from the user's device. */}
     </div>
   );
 }
