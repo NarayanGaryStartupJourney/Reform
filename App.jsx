@@ -65,7 +65,7 @@ function App() {
         </div>
       )}
 
-      {/* TODO: Add one button to upload a video file from the user's device. */}
+        {/* TODO: Add one button to upload a video file from the user's device. */}
     </div>
   );
 }
