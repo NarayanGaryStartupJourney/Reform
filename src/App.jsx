@@ -5,6 +5,7 @@
 // 5. Text feedback is sent to the frontend and displayed to the user. TODO Add audio feedback.
 
 import React, { useState } from 'react';
+import UploadVideo from './camera/uploadVideo/uploadVideo';
 
 function App() {
   const [backendStatus, setBackendStatus] = useState(null);
@@ -65,7 +66,10 @@ function App() {
         </div>
       )}
 
-      {/* TODO: Add one button to upload a video file from the user's device. */}
+      <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
+        <h2>Video Upload</h2>
+        <UploadVideo />
+      </div>
     </div>
   );
 }
