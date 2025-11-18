@@ -1,8 +1,4 @@
-// Video upload handler for iPhone - React component
-// Handles user input when upload button is clicked
-
 import React, { useState, useRef, useEffect } from 'react';
-// Chart.js registration is handled in shared/utils/chartConfig.js
 import '../../shared/utils/chartConfig';
 import ScoreBreakdown from '../../shared/components/ScoreBreakdown';
 import AnglePlot from '../../shared/components/charts/AnglePlot';
@@ -28,6 +24,7 @@ function UploadVideo() {
   const [exerciseType, setExerciseType] = useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoExpanded, setIsVideoExpanded] = useState(false);
+  const [logs, setLogs] = useState([]);
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -45,6 +42,33 @@ function UploadVideo() {
   const handleVideoPause = () => {
     setIsVideoPlaying(false);
   };
+
+  useEffect(() => {
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    console.log = (...args) => {
+      originalLog(...args);
+      setLogs(prev => [...prev, { type: 'log', message: args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), timestamp: new Date().toLocaleTimeString() }]);
+    };
+
+    console.error = (...args) => {
+      originalError(...args);
+      setLogs(prev => [...prev, { type: 'error', message: args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), timestamp: new Date().toLocaleTimeString() }]);
+    };
+
+    console.warn = (...args) => {
+      originalWarn(...args);
+      setLogs(prev => [...prev, { type: 'warn', message: args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), timestamp: new Date().toLocaleTimeString() }]);
+    };
+
+    return () => {
+      console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
+    };
+  }, []);
 
   const handleExpandVideo = () => {
     if (videoRef.current) {
@@ -95,7 +119,6 @@ function UploadVideo() {
   const handleFileChange = (event) => {
     const files = event.target.files;
     
-    // Ensure only one file is selected
     if (files.length > 1) {
       alert('Please select only one video file at a time.');
       event.target.value = '';
@@ -1288,6 +1311,83 @@ function UploadVideo() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Console Logs Display - Hidden */}
+      {logs.length > 0 && (
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          backgroundColor: 'var(--card-bg)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '8px',
+          display: 'none'  // Hidden as requested
+        }}>
+          <details open>
+            <summary style={{
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              padding: '8px',
+              color: 'var(--text-primary)',
+              fontSize: '14px'
+            }}>
+              📋 Console Logs ({logs.length})
+            </summary>
+            <div style={{
+              marginTop: '10px',
+              maxHeight: '400px',
+              overflowY: 'auto',
+              fontFamily: 'monospace',
+              fontSize: '12px'
+            }}>
+              {logs.map((log, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '4px 8px',
+                    marginBottom: '2px',
+                    backgroundColor: log.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 
+                                   log.type === 'warn' ? 'rgba(245, 158, 11, 0.1)' : 
+                                   'var(--bg-tertiary)',
+                    borderLeft: `3px solid ${
+                      log.type === 'error' ? 'var(--score-poor)' : 
+                      log.type === 'warn' ? 'var(--score-warning)' : 
+                      'var(--border-color)'
+                    }`,
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
+                    [{log.timestamp}]
+                  </span>
+                  <span style={{ 
+                    marginLeft: '8px',
+                    color: log.type === 'error' ? 'var(--score-poor)' : 
+                           log.type === 'warn' ? 'var(--score-warning)' : 
+                           'var(--text-primary)'
+                  }}>
+                    {log.message}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setLogs([])}
+              style={{
+                marginTop: '10px',
+                padding: '6px 12px',
+                backgroundColor: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '4px',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              Clear Logs
+            </button>
+          </details>
         </div>
       )}
     </div>
