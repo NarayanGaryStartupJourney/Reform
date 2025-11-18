@@ -66,6 +66,13 @@ h1 {
   font-weight: 700;
 }
 
+.app-header {
+  white-space: nowrap;
+  width: 100%;
+  font-size: clamp(0.9rem, 5vw, 2.5rem);
+  overflow: visible;
+}
+
 h2 {
   font-size: 1.75rem;
   font-weight: 600;
@@ -150,17 +157,11 @@ select option:disabled {
   opacity: 0.5;
 }
 
-/* Analysis Results Layout - Responsive */
+/* Analysis Results Layout - Desktop */
 .analysis-layout {
   display: flex;
   flex-direction: row;
   gap: 15px;
   align-items: flex-start;
-}
-
-@media (max-width: 768px) {
-  .analysis-layout {
-    flex-direction: column;
-  }
 }
 

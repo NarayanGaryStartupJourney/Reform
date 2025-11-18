@@ -57,10 +57,10 @@ function ScoreBreakdown({
       borderRadius: '8px',
       textAlign: 'center'
     }}>
-      <h2 style={{ margin: '0 0 8px 0', fontSize: '16px', color: 'var(--text-primary)', fontWeight: 600 }}>
+      <h2 className="overall-score-header" style={{ margin: '0 0 8px 0', fontSize: '16px', color: 'var(--text-primary)', fontWeight: 600 }}>
         Overall Form Score
       </h2>
-      <div style={{
+      <div className="overall-score-display" style={{
         fontSize: '36px',
         fontWeight: 'bold',
         color: scoreColor,

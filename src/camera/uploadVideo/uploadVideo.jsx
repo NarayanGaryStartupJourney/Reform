@@ -155,12 +155,12 @@ function UploadVideo() {
       
       const createVideoObject = (duration = null) => {
         const obj = {
-          file: file,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          lastModified: file.lastModified
-        };
+        file: file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      };
         if (duration !== null && !isNaN(duration) && duration > 0) {
           obj.duration = duration;
         }
@@ -198,9 +198,9 @@ function UploadVideo() {
         }
         
         const videoObject = createVideoObject(duration);
-        setVideoFile(videoObject);
-        console.log('✅ Video file selected and stored:', videoObject);
-        console.log('📹 Full File object:', file);
+      setVideoFile(videoObject);
+      console.log('✅ Video file selected and stored:', videoObject);
+      console.log('📹 Full File object:', file);
       };
       
       video.onerror = () => {
@@ -397,7 +397,7 @@ function UploadVideo() {
         style={{ display: 'none' }}
       />
       {uploadStatus && uploadStatus.success ? (
-        <div style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
+        <div className="results-controls-container" style={{ marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
           <label style={{ 
             fontWeight: 600,
             color: 'var(--text-primary)',
@@ -460,7 +460,7 @@ function UploadVideo() {
               Deadlift (Coming Soon)
             </option>
           </select>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'nowrap' }}>
+          <div className="results-buttons-container" style={{ marginLeft: 'auto', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'nowrap' }}>
             <button
               onClick={handleUploadClick}
               style={{ 
@@ -488,7 +488,7 @@ function UploadVideo() {
               {videoFile ? 'Change video' : 'Select Video'}
             </button>
             {videoFile && (
-              <span style={{ 
+              <span className="results-filename-desktop" style={{ 
                 fontSize: '12px', 
                 color: 'var(--text-secondary)',
                 fontStyle: 'italic',
@@ -533,15 +533,31 @@ function UploadVideo() {
               {analyzing ? 'Analyzing...' : uploading ? 'Uploading...' : 'Analyze!'}
             </button>
           </div>
+          {videoFile && (
+            <p className="results-filename-mobile" style={{ 
+              margin: '8px 0 0 0', 
+              fontSize: '12px', 
+              color: 'var(--text-secondary)',
+              fontStyle: 'italic',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+              display: 'none'
+            }} title={videoFile.name}>
+              {videoFile.name}
+            </p>
+          )}
         </div>
       ) : (
-        <>
-          <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="pre-analysis-controls-container" style={{ marginBottom: '30px' }}>
+          <div className="pre-analysis-exercise-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap', marginBottom: '12px' }}>
             <label style={{ 
               fontWeight: 600,
               color: 'var(--text-primary)',
               fontSize: '1rem',
-              margin: 0
+              margin: 0,
+              whiteSpace: 'nowrap'
             }}>
               Select Exercise Type:
             </label>
@@ -563,7 +579,8 @@ function UploadVideo() {
                 fontFamily: 'Inter, sans-serif',
                 minWidth: '200px',
                 transition: 'all 0.2s ease',
-                outline: 'none'
+                outline: 'none',
+                flexShrink: 0
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = 'var(--border-color-hover)';
@@ -598,53 +615,53 @@ function UploadVideo() {
               </option>
             </select>
           </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <button
-                onClick={handleUploadClick}
-                style={{ 
-                  padding: '12px 24px', 
-                  margin: '10px 0 0 0',
-                  backgroundColor: 'var(--button-bg)',
-                  color: 'var(--button-text)',
-                  border: `1px solid var(--button-border)`,
-                  borderRadius: '8px',
-                  fontWeight: 500,
-                  fontFamily: 'Inter, sans-serif',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'var(--button-hover)';
-                  e.target.style.borderColor = 'var(--border-color-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'var(--button-bg)';
-                  e.target.style.borderColor = 'var(--button-border)';
-                }}
-              >
-                {videoFile ? 'Change video' : 'Select Video'}
-              </button>
-              {videoFile && (
-                <p style={{ 
-                  margin: '4px 0 10px 0', 
-                  fontSize: '12px', 
-                  color: 'var(--text-secondary)',
-                  fontStyle: 'italic',
-                  maxWidth: '200px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }} title={videoFile.name}>
-                  {videoFile.name}
-                </p>
-              )}
-            </div>
+          <div className="pre-analysis-buttons-container" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'nowrap' }}>
+            <button
+              onClick={handleUploadClick}
+              style={{ 
+                padding: '12px 24px', 
+                margin: 0,
+                backgroundColor: 'var(--button-bg)',
+                color: 'var(--button-text)',
+                border: `1px solid var(--button-border)`,
+                borderRadius: '8px',
+                fontWeight: 500,
+                fontFamily: 'Inter, sans-serif',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = 'var(--button-hover)';
+                e.target.style.borderColor = 'var(--border-color-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'var(--button-bg)';
+                e.target.style.borderColor = 'var(--button-border)';
+              }}
+            >
+              {videoFile ? 'Change video' : 'Select Video'}
+            </button>
+            {videoFile && (
+              <span className="pre-analysis-filename-desktop" style={{ 
+                fontSize: '12px', 
+                color: 'var(--text-secondary)',
+                fontStyle: 'italic',
+                maxWidth: '200px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                flexShrink: 1
+              }} title={videoFile.name}>
+                {videoFile.name}
+              </span>
+            )}
             <button
               onClick={handleSendToBackend}
               disabled={!videoFile || uploading || analyzing}
               style={{ 
                 padding: '12px 24px', 
-                margin: '10px 0',
+                margin: 0,
                 backgroundColor: (!videoFile || uploading || analyzing) ? 'var(--bg-tertiary)' : 'var(--score-excellent)',
                 color: 'white',
                 border: 'none',
@@ -653,7 +670,9 @@ function UploadVideo() {
                 fontWeight: 500,
                 fontFamily: 'Inter, sans-serif',
                 transition: 'all 0.2s ease',
-                opacity: (!videoFile || uploading || analyzing) ? 0.6 : 1
+                opacity: (!videoFile || uploading || analyzing) ? 0.6 : 1,
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
               onMouseEnter={(e) => {
                 if (videoFile && !uploading && !analyzing) {
@@ -669,12 +688,27 @@ function UploadVideo() {
               {analyzing ? 'Analyzing...' : uploading ? 'Uploading...' : 'Analyze!'}
             </button>
           </div>
-        </>
+          {videoFile && (
+            <p className="pre-analysis-filename-mobile" style={{ 
+              margin: '8px 0 0 0', 
+              fontSize: '12px', 
+              color: 'var(--text-secondary)',
+              fontStyle: 'italic',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+              display: 'none'
+            }} title={videoFile.name}>
+              {videoFile.name}
+            </p>
+          )}
+        </div>
       )}
       {videoFile && (
         <div>
           {(uploading || analyzing) && (
-            <div style={{ marginTop: '10px', width: '300px' }}>
+            <div className="analysis-progress-container" style={{ marginTop: '10px', width: '300px' }}>
               {uploading && !analyzing && (
                 <>
                   <div style={{
@@ -775,7 +809,7 @@ function UploadVideo() {
 
               {uploadStatus.data.form_analysis?.final_score && (
                 <div className="analysis-layout" style={{ marginTop: '15px' }}>
-                  <div style={{
+                  <div className="form-score-container" style={{
                     flex: '1',
                     minWidth: 0
                   }}>
@@ -803,7 +837,7 @@ function UploadVideo() {
                         }}>
                           📈 Angle Analysis Plots
                         </summary>
-                        <div style={{ marginTop: '10px' }}>
+                        <div className="angle-analysis-plot-container" style={{ marginTop: '10px' }}>
                           <AnglePlot
                             anglesPerFrame={uploadStatus.data.calculation_results.angles_per_frame}
                             frameCount={uploadStatus.data.frame_count}
@@ -821,7 +855,7 @@ function UploadVideo() {
                     minWidth: 0
                   }}>
                     {uploadStatus.data.visualization_url && (
-                      <div style={{ 
+                      <div className="video-container" style={{ 
                         position: 'relative',
                         width: '100%'
                       }}>
@@ -935,32 +969,32 @@ function UploadVideo() {
                     <p style={{ color: 'var(--text-secondary)', margin: '4px 0' }}><strong>Duration:</strong> {Math.floor(videoFile.duration / 60)}:{(Math.floor(videoFile.duration % 60)).toString().padStart(2, '0')} ({videoFile.duration.toFixed(1)} seconds)</p>
                   )}
                   <p style={{ color: 'var(--text-secondary)', margin: '4px 0' }}><strong>Type:</strong> {videoFile.type}</p>
-                  <details style={{ marginTop: '10px' }}>
+          <details style={{ marginTop: '10px' }}>
                     <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: 'var(--text-primary)' }}>🔍 View Full videoFile Object</summary>
-                    <pre style={{ 
-                      marginTop: '10px', 
-                      padding: '10px', 
+            <pre style={{ 
+              marginTop: '10px', 
+              padding: '10px', 
                       background: 'var(--bg-tertiary)', 
                       border: '1px solid var(--border-color)', 
                       borderRadius: '8px',
-                      overflow: 'auto',
+              overflow: 'auto',
                       maxHeight: '300px',
                       color: 'var(--text-primary)'
-                    }}>
-                      {JSON.stringify(videoFile, (key, value) => {
-                        if (value instanceof File) {
-                          return {
-                            name: value.name,
-                            size: value.size,
-                            type: value.type,
-                            lastModified: value.lastModified,
-                            _type: 'File object (binary data not shown)'
-                          };
-                        }
-                        return value;
-                      }, 2)}
-                    </pre>
-                  </details>
+            }}>
+              {JSON.stringify(videoFile, (key, value) => {
+                if (value instanceof File) {
+                  return {
+                    name: value.name,
+                    size: value.size,
+                    type: value.type,
+                    lastModified: value.lastModified,
+                    _type: 'File object (binary data not shown)'
+                  };
+                }
+                return value;
+              }, 2)}
+            </pre>
+          </details>
                 </div>
               )}
             </div>
@@ -999,7 +1033,7 @@ function UploadVideo() {
                   <p style={{ margin: '10px 0 5px 0', fontSize: '12px', fontWeight: 'bold' }}>Error Details:</p>
                   <pre style={{ 
                     margin: '5px 0', 
-                    padding: '10px', 
+              padding: '10px', 
                     fontSize: '11px',
                     backgroundColor: 'var(--bg-tertiary)',
                     border: '1px solid var(--border-color)',

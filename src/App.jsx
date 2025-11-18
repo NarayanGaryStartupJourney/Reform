@@ -45,9 +45,8 @@ function App() {
       maxWidth: '1200px',
       margin: '0 auto'
     }}>
-      <h1 style={{ 
+      <h1 className="app-header" style={{ 
         marginBottom: '10px',
-        fontSize: '2.5rem',
         fontWeight: 700,
         color: 'var(--text-primary)'
       }}>
@@ -84,7 +83,7 @@ function App() {
         borderTop: '1px solid var(--border-color)', 
         paddingTop: '30px' 
       }}>
-        <h2 style={{ 
+        <h2 className="video-upload-header" style={{ 
           marginBottom: '20px',
           fontSize: '1.75rem',
           fontWeight: 600,
