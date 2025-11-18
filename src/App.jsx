@@ -39,8 +39,20 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Reform - Exercise Analyzer</h1>
+    <div className="App" style={{ 
+      minHeight: '100vh', 
+      padding: '20px',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    }}>
+      <h1 style={{ 
+        marginBottom: '10px',
+        fontSize: '2.5rem',
+        fontWeight: 700,
+        color: 'var(--text-primary)'
+      }}>
+        Reform - Exercise Analyzer
+      </h1>
       
       <div style={{ margin: '20px 0', display: 'none' }}>
         <button 
@@ -67,8 +79,19 @@ function App() {
         </div>
       )}
 
-      <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
-        <h2>Video Upload</h2>
+      <div style={{ 
+        marginTop: '30px', 
+        borderTop: '1px solid var(--border-color)', 
+        paddingTop: '30px' 
+      }}>
+        <h2 style={{ 
+          marginBottom: '20px',
+          fontSize: '1.75rem',
+          fontWeight: 600,
+          color: 'var(--text-primary)'
+        }}>
+          Video Upload
+        </h2>
         <UploadVideo />
       </div>
     </div>
