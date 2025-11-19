@@ -1,8 +1,69 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { API_ENDPOINTS } from '../../config/api';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [tokensRemaining, setTokensRemaining] = useState(null);
   const menuRef = useRef(null);
+
+  // Get user initials from localStorage
+  const getUserInitials = () => {
+    const userName = localStorage.getItem('userName') || localStorage.getItem('user_name') || '';
+    if (!userName) return 'U'; // Default to 'U' if no name
+    
+    const parts = userName.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      // First letter of first name + first letter of last name
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    } else if (parts.length === 1) {
+      // Only one name, use first two letters
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
+  // Fetch token count from API
+  const fetchTokens = async () => {
+    const token = localStorage.getItem('userToken');
+    if (!token) return;
+
+    try {
+      const response = await fetch(API_ENDPOINTS.ME, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTokensRemaining(data.tokens_remaining);
+      }
+    } catch (error) {
+      // Silently fail - tokens will just not show
+      console.warn('Failed to fetch token count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTokens();
+    
+    // Listen for token updates from analysis completion
+    const handleTokensUpdated = (event) => {
+      if (event.detail?.tokens_remaining !== undefined) {
+        setTokensRemaining(event.detail.tokens_remaining);
+      }
+    };
+    
+    window.addEventListener('tokensUpdated', handleTokensUpdated);
+    
+    // Refresh tokens every 30 seconds
+    const interval = setInterval(fetchTokens, 30000);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('tokensUpdated', handleTokensUpdated);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -31,9 +92,13 @@ const ProfileMenu = () => {
   const handleLogout = () => {
     // Clear all auth-related data
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userToken');
     localStorage.removeItem('access_token');
+    localStorage.removeItem('userId');
     localStorage.removeItem('user_id');
+    localStorage.removeItem('userEmail');
     localStorage.removeItem('user_email');
+    localStorage.removeItem('userName');
     localStorage.removeItem('user_name');
     // Close the menu before redirecting
     setIsOpen(false);
@@ -71,6 +136,16 @@ const ProfileMenu = () => {
           transition: 'all 0.2s ease'
         }}
       >
+        {tokensRemaining !== null && (
+          <span style={{
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            marginRight: '4px'
+          }}>
+            {tokensRemaining} tokens
+          </span>
+        )}
         <span style={{
           width: '24px',
           height: '24px',
@@ -82,7 +157,7 @@ const ProfileMenu = () => {
           color: '#fff',
           fontSize: '0.75rem',
           fontWeight: 600
-        }}>RA</span>
+        }}>{getUserInitials()}</span>
         <span style={{ fontSize: '0.75rem' }}>▾</span>
       </button>
       {isOpen && (

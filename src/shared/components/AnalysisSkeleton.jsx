@@ -29,7 +29,7 @@ const AnalysisSkeleton = ({
 }) => {
   // Check if user is logged in
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  
+
   // State management
   const [selectedFile, setSelectedFile] = useState(null);
   const [exercise, setExercise] = useState('');
@@ -39,7 +39,11 @@ const AnalysisSkeleton = ({
   const [progressText, setProgressText] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [results, setResults] = useState(null);
-  const [hasCompletedAnalysis, setHasCompletedAnalysis] = useState(false);
+  // Check localStorage for persisted anonymous analysis completion
+  const [hasCompletedAnalysis, setHasCompletedAnalysis] = useState(() => {
+    if (isLoggedIn) return false;
+    return localStorage.getItem('anonymousAnalysisCompleted') === 'true';
+  });
   const [expandedStates, setExpandedStates] = useState({
     torso_angle: false,
     quad_angle: false,
@@ -61,6 +65,25 @@ const AnalysisSkeleton = ({
   const videoRef = useRef(null);
   const leftCardRef = useRef(null);
   const rightCardRef = useRef(null);
+
+  // Check anonymous limit on mount (for non-logged-in users)
+  useEffect(() => {
+    if (!isLoggedIn && !hasCompletedAnalysis) {
+      // Check with backend if limit is reached
+      fetch(API_ENDPOINTS.CHECK_ANONYMOUS_LIMIT)
+        .then(res => res.json())
+        .then(data => {
+          if (data.limit_reached) {
+            setHasCompletedAnalysis(true);
+            localStorage.setItem('anonymousAnalysisCompleted', 'true');
+          }
+        })
+        .catch(err => {
+          // Silently fail - user can still try to upload
+          console.warn('Failed to check anonymous limit:', err);
+        });
+    }
+  }, [isLoggedIn, hasCompletedAnalysis]);
 
   // Fullscreen change handler
   useEffect(() => {
@@ -300,9 +323,16 @@ const AnalysisSkeleton = ({
       setProgressText('');
       setResults(data);
       
-      // Mark analysis as completed for non-logged-in users
+      // Mark analysis as completed for non-logged-in users and persist to localStorage
       if (!isLoggedIn) {
         setHasCompletedAnalysis(true);
+        localStorage.setItem('anonymousAnalysisCompleted', 'true');
+      }
+      
+      // If logged in and response includes token info, trigger token refresh in ProfileMenu
+      if (isLoggedIn && data.tokens_remaining !== undefined) {
+        // Dispatch custom event to update token count in ProfileMenu
+        window.dispatchEvent(new CustomEvent('tokensUpdated', { detail: { tokens_remaining: data.tokens_remaining } }));
       }
       
       if (onAnalysisComplete) {

@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   UPLOAD_VIDEO: `${API_URL}/upload-video`,
   HEALTH: `${API_URL}/health`,
   ROOT: `${API_URL}/`,
+  CHECK_ANONYMOUS_LIMIT: `${API_URL}/api/check-anonymous-limit`,
   SIGNUP: `${API_URL}/api/auth/signup`,
   LOGIN: `${API_URL}/api/auth/login`,
   ME: `${API_URL}/api/auth/me`,
