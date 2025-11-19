@@ -274,7 +274,8 @@ const AnalysisSkeleton = ({
         });
 
         // Add authorization header if token exists
-        const token = localStorage.getItem('access_token');
+        // Note: Upload endpoint doesn't require auth, but we send it for future use
+        const token = localStorage.getItem('userToken');
         if (token) {
           xhr.setRequestHeader('Authorization', `Bearer ${token}`);
         }
