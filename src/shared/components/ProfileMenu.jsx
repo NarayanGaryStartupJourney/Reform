@@ -8,18 +8,29 @@ const ProfileMenu = () => {
 
   // Get user initials from localStorage
   const getUserInitials = () => {
-    const userName = localStorage.getItem('userName') || localStorage.getItem('user_name') || '';
-    if (!userName) return 'U'; // Default to 'U' if no name
+    // Try to get first_name and last_name separately (preferred)
+    const firstName = localStorage.getItem('firstName') || '';
+    const lastName = localStorage.getItem('lastName') || '';
     
-    const parts = userName.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      // First letter of first name + first letter of last name
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    } else if (parts.length === 1) {
-      // Only one name, use first two letters
-      return parts[0].substring(0, 2).toUpperCase();
+    if (firstName && lastName) {
+      // Use first letter of first name + first letter of last name
+      return (firstName[0] + lastName[0]).toUpperCase();
     }
-    return 'U';
+    
+    // Fallback: try to extract from full name
+    const userName = localStorage.getItem('userName') || localStorage.getItem('user_name') || '';
+    if (userName) {
+      const parts = userName.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        // First letter of first name + first letter of last name
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      } else if (parts.length === 1) {
+        // Only one name, use first two letters
+        return parts[0].substring(0, 2).toUpperCase();
+      }
+    }
+    
+    return 'U'; // Default to 'U' if no name found
   };
 
   // Fetch token count from API

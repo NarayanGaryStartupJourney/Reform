@@ -185,10 +185,23 @@ function LandingPage() {
                   }
 
                   // Store token and user info
+                  localStorage.setItem('userToken', data.access_token);
                   localStorage.setItem('access_token', data.access_token);
+                  localStorage.setItem('userId', data.user_id);
                   localStorage.setItem('user_id', data.user_id);
+                  localStorage.setItem('userEmail', data.email);
                   localStorage.setItem('user_email', data.email);
+                  localStorage.setItem('userName', data.full_name);
                   localStorage.setItem('user_name', data.full_name);
+                  // Parse full_name to extract first and last name for login
+                  const nameParts = data.full_name.trim().split(/\s+/);
+                  if (nameParts.length >= 2) {
+                    localStorage.setItem('firstName', nameParts[0]);
+                    localStorage.setItem('lastName', nameParts.slice(1).join(' '));
+                  } else if (nameParts.length === 1) {
+                    localStorage.setItem('firstName', nameParts[0]);
+                    localStorage.setItem('lastName', '');
+                  }
                   localStorage.setItem('isLoggedIn', 'true');
 
                   setIsLoggedIn(true);

@@ -4,7 +4,8 @@ import { API_ENDPOINTS } from '../config/api';
 
 function SignupPage() {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,8 +17,13 @@ function SignupPage() {
     setError('');
 
     // Validation
-    if (!fullName.trim()) {
-      setError('Please enter your full name');
+    if (!firstName.trim()) {
+      setError('Please enter your first name');
+      return;
+    }
+
+    if (!lastName.trim()) {
+      setError('Please enter your last name');
       return;
     }
 
@@ -52,7 +58,8 @@ function SignupPage() {
         body: JSON.stringify({
           email: email.trim(),
           password: password,
-          full_name: fullName.trim()
+          first_name: firstName.trim(),
+          last_name: lastName.trim()
         })
       });
 
@@ -63,10 +70,16 @@ function SignupPage() {
       }
 
       // Store token and user info
+      localStorage.setItem('userToken', data.access_token);
       localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('userId', data.user_id);
       localStorage.setItem('user_id', data.user_id);
+      localStorage.setItem('userEmail', data.email);
       localStorage.setItem('user_email', data.email);
+      localStorage.setItem('userName', data.full_name); // Keep full_name for compatibility
       localStorage.setItem('user_name', data.full_name);
+      localStorage.setItem('firstName', data.first_name || firstName.trim());
+      localStorage.setItem('lastName', data.last_name || lastName.trim());
       localStorage.setItem('isLoggedIn', 'true');
 
       // Redirect to landing page
@@ -106,12 +119,12 @@ function SignupPage() {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem' }}>
-            Full Name
+            First Name
             <input
               type="text"
-              placeholder="Jordan Smith"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Jordan"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               style={{
                 padding: '10px',
                 borderRadius: '8px',
@@ -119,6 +132,25 @@ function SignupPage() {
                 background: 'var(--bg-tertiary)',
                 color: 'var(--text-primary)'
               }}
+              disabled={isSubmitting}
+            />
+          </label>
+
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem' }}>
+            Last Name
+            <input
+              type="text"
+              placeholder="Smith"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)'
+              }}
+              disabled={isSubmitting}
             />
           </label>
 
