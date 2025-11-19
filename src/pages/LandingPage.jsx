@@ -4,8 +4,7 @@ import AnalysisSkeleton from '../shared/components/AnalysisSkeleton';
 import { API_ENDPOINTS } from '../config/api';
 import './DashboardAnalyze.css';
 
-const DEMO_EMAIL = process.env.REACT_APP_DEMO_EMAIL || '';
-const DEMO_PASSWORD = process.env.REACT_APP_DEMO_PASSWORD || '';
+// Demo credentials removed for security - use real authentication only
 
 function LandingPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -150,22 +149,7 @@ function LandingPage() {
                 e.preventDefault();
                 setLoginError('');
 
-                // Try demo credentials first (for backward compatibility)
-                if (
-                  DEMO_EMAIL &&
-                  DEMO_PASSWORD &&
-                  email.trim().toLowerCase() === DEMO_EMAIL.toLowerCase() &&
-                  password === DEMO_PASSWORD
-                ) {
-                  localStorage.setItem('isLoggedIn', 'true');
-                  setIsLoggedIn(true);
-                  setShowLoginModal(false);
-                  setEmail('');
-                  setPassword('');
-                  return;
-                }
-
-                // Try API login
+                // API login
                 try {
                   const response = await fetch(API_ENDPOINTS.LOGIN, {
                     method: 'POST',

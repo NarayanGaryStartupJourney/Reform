@@ -4,16 +4,21 @@ import LandingPage from './pages/LandingPage';
 import DashboardAnalyze from './pages/DashboardAnalyze';
 import SignupPage from './pages/SignupPage';
 import ProfilePage from './pages/ProfilePage';
+import Footer from './shared/components/Footer';
+import './App.css';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/dashboard/analyze" element={<DashboardAnalyze />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="*" element={<LandingPage />} />
-    </Routes>
+    <div className="app-container">
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard/analyze" element={<DashboardAnalyze />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 }
 
