@@ -14,7 +14,11 @@ export const API_URL = getApiUrl();
 export const API_ENDPOINTS = {
   UPLOAD_VIDEO: `${API_URL}/upload-video`,
   HEALTH: `${API_URL}/health`,
-  ROOT: `${API_URL}/`
+  ROOT: `${API_URL}/`,
+  SIGNUP: `${API_URL}/api/auth/signup`,
+  LOGIN: `${API_URL}/api/auth/login`,
+  ME: `${API_URL}/api/auth/me`,
+  CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`
 };
 
 // Only log API URL in development mode for security
