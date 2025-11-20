@@ -31,6 +31,9 @@
 .dashboard-analyze .header-title {
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dashboard-analyze .header-subtitle {
@@ -255,6 +258,10 @@
   .dashboard-analyze .shell {
     border-radius: 20px;
     padding: 28px;
+  }
+
+  .dashboard-analyze .header-title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
   }
 
   .dashboard-analyze .analysis-grid {

@@ -27,16 +27,19 @@ function LandingPage() {
     window.location.href = '/dashboard/index.html';
   };
 
+  const anonymousSubtitle = "Select your exercise type and upload a video. Kick off the AI-powered analysis pipeline optimized for Reform athletes.";
+  const loggedInSubtitle = "Select your exercise type, upload a video, and include any coaching notes. Kick off the AI-powered analysis pipeline optimized for Reform athletes.";
+
   return (
     <PageContainer className="App">
       <PageHeader onLoginClick={() => setShowLoginModal(true)} />
 
-      <div style={{ marginTop: '30px' }}>
+      <div style={{ marginTop: '16px' }}>
         <AnalysisSkeleton
           showNotes={false}
           syncCardHeights={true}
           headerTitle="Upload a Session"
-          headerSubtitle="Select your exercise type, upload a video, and include any coaching notes. Kick off the AI-powered analysis pipeline optimized for Reform athletes."
+          headerSubtitle={isLoggedIn ? loggedInSubtitle : anonymousSubtitle}
           onSignInClick={() => setShowLoginModal(true)}
         />
       </div>

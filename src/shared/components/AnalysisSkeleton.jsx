@@ -59,6 +59,10 @@ const AnalysisSkeleton = ({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoExpanded, setIsVideoExpanded] = useState(false);
   const [notes, setNotes] = useState('');
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 768px)').matches;
+  });
 
   // Refs
   const fileInputRef = useRef(null);
@@ -113,7 +117,26 @@ const AnalysisSkeleton = ({
 
   // Optional: Sync card heights
   useEffect(() => {
-    if (!syncCardHeights) return;
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const shouldSyncHeights = syncCardHeights && !isMobile;
+
+  useEffect(() => {
+    if (!shouldSyncHeights) {
+      if (leftCardRef.current) {
+        leftCardRef.current.style.height = 'auto';
+      }
+      return;
+    }
 
     const syncHeights = () => {
       if (rightCardRef.current && leftCardRef.current) {
@@ -140,7 +163,7 @@ const AnalysisSkeleton = ({
       window.removeEventListener('resize', syncHeights);
       observer.disconnect();
     };
-  }, [syncCardHeights, uploading, analyzing, progress, errorMessage]);
+  }, [shouldSyncHeights, uploading, analyzing, progress, errorMessage]);
 
   // Handlers
   const handleToggleExpanded = (key) => {
@@ -375,11 +398,11 @@ const AnalysisSkeleton = ({
         </header>
 
         <div className="analysis-grid">
-          <article className="card" ref={syncCardHeights ? leftCardRef : null}>
+          <article className="card" ref={shouldSyncHeights ? leftCardRef : null}>
             <div className="upload-card-content">
               <h3>Upload Your Video</h3>
               <div className="upload-area" style={isDisabled ? { opacity: 0.5, pointerEvents: 'none' } : {}}>
-                <label className="upload-label">
+                <label className="upload-label" style={{ justifyContent: 'center', alignSelf: 'center', width: 'auto' }}>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -387,9 +410,15 @@ const AnalysisSkeleton = ({
                     onChange={handleFileChange}
                     disabled={isDisabled}
                   />
-                  <span>Drag & drop or click to select</span>
+                  <span className="upload-text upload-text-desktop">Drag & drop or click to select</span>
+                  <span
+                    className="upload-text upload-text-mobile"
+                    style={{ display: 'none' }}
+                  >
+                    Click to upload
+                  </span>
                 </label>
-                <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                <p className="upload-guidance" style={{ marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                   Supported formats: MP4, MOV, AVI • Up to 2 minutes • Ensure clear lighting
                 </p>
               </div>
@@ -399,7 +428,7 @@ const AnalysisSkeleton = ({
             </div>
           </article>
 
-          <article className="card" ref={syncCardHeights ? rightCardRef : null}>
+          <article className="card" ref={shouldSyncHeights ? rightCardRef : null}>
             <h3>Analysis Details</h3>
             <div className="analysis-options">
               <div className="select-group">

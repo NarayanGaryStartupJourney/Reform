@@ -9,14 +9,18 @@ import React from 'react';
  * @param {string} props.className - Additional CSS class name
  */
 const PageContainer = ({ children, maxWidth = '1200px', className = '' }) => {
+  const responsivePadding = 'min(24px, 4vw)';
+
   return (
     <div 
       className={className}
       style={{ 
         minHeight: '100vh', 
-        padding: '20px',
+        padding: responsivePadding,
         maxWidth: maxWidth,
-        margin: '0 auto'
+        width: '100%',
+        margin: '0 auto',
+        boxSizing: 'border-box'
       }}
     >
       {children}

@@ -128,13 +128,17 @@ function UploadVideo() {
     
     const file = files[0];
     if (file && file.type.startsWith('video/')) {
-      const MAX_FILE_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const MAX_FILE_SIZE_BYTES = (isLoggedIn ? 250 : 100) * 1024 * 1024; // 250 MB signed-in, 100 MB anonymous
       const WARNING_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
       
       if (file.size > MAX_FILE_SIZE_BYTES) {
         const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-        const maxMB = (MAX_FILE_SIZE_BYTES / 1024 / 1024).toFixed(0);
-        alert(`Video file too large (${sizeMB} MB). Maximum file size: ${maxMB} MB.\n\nPlease select a smaller video file or compress your video.`);
+        const maxMB = isLoggedIn ? 250 : 100;
+        const modeDescription = isLoggedIn
+          ? 'Signed-in members can upload up to 250 MB.'
+          : 'Anonymous users can upload up to 100 MB.';
+        alert(`Video file too large (${sizeMB} MB).\n\nMaximum file size: ${maxMB} MB.\n${modeDescription}\n\nPlease select a smaller video file or compress your video.`);
         event.target.value = '';
         setVideoFile(null);
         return;
