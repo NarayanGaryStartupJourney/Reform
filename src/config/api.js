@@ -19,7 +19,8 @@ export const API_ENDPOINTS = {
   SIGNUP: `${API_URL}/api/auth/signup`,
   LOGIN: `${API_URL}/api/auth/login`,
   ME: `${API_URL}/api/auth/me`,
-  CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`
+  CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
+  UPDATE_USERNAME: `${API_URL}/api/auth/update-username`
 };
 
 // Only log API URL in development mode for security

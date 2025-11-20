@@ -25,262 +25,205 @@
 
 /* ================================================================
    PAGE HEADER (PageHeader component)
+   Applied to ALL pages for consistent title and icon positioning
    ================================================================ */
 @media (max-width: 768px) {
+  /* Base header layout - applies to all pages */
   .page-header {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
   }
 
   .app-header {
-    font-size: clamp(1rem, 5.5vw, 2rem);
-    line-height: 1.3;
+    font-size: clamp(1rem, 5.5vw, 2rem) !important;
+    line-height: 1.3 !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex-grow: 0 !important;
+    order: 2 !important;
   }
 
-  /* Anonymous header: Login button above title */
+  /* Anonymous header: Login button above title (correct position from landing page) */
   .page-header--anonymous .header-actions {
-    order: -1;
-    width: 100%;
-    justify-content: flex-end;
+    order: -1 !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
+    margin-left: 0 !important;
   }
 
   .page-header--anonymous .header-cta {
-    width: auto;
+    width: auto !important;
     margin-left: 0 !important;
   }
 
-  /* Authenticated header: ProfileMenu + Dashboard above title */
+  /* Authenticated header: ProfileMenu + Dashboard above title (same pattern as anonymous) */
   .page-header--authenticated {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .page-header--authenticated .app-header {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 0;
-    order: 2;
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
   }
 
   .page-header--authenticated .header-actions {
-    order: 1;
-    justify-content: flex-end;
+    order: -1 !important;
+    width: 100% !important;
+    justify-content: flex-end !important;
     margin-left: 0 !important;
+  }
+
+  .page-header--authenticated .app-header {
+    width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex-grow: 0 !important;
+    order: 2 !important;
   }
 
   .page-header--authenticated .profile-menu,
   .page-header--authenticated .header-cta {
-    width: auto;
+    width: auto !important;
   }
 
   /* Hide Dashboard text label on mobile, keep icon only */
   .page-header--authenticated .header-cta__label {
-    display: none;
+    display: none !important;
   }
 }
 
 /* ================================================================
-   ANALYSIS SKELETON (AnalysisSkeleton component)
-   Used by LandingPage and DashboardAnalyze
+   ANALYSIS SKELETON V2 (AnalysisSkeletonV2 component)
+   Used by LandingPage, DashboardAnalyze, DashboardPage, ProfilePage
+   Ensures consistent title positioning across all pages
    ================================================================ */
 @media (max-width: 768px) {
-  /* Main container */
-  .dashboard-analyze {
-    padding: 0;
-    justify-content: stretch;
-    width: 100%;
+  /* Main container - override default styles for mobile */
+  .skeleton-v2-shell {
+    border-radius: 20px;
+    margin-top: 16px;
   }
 
-  .dashboard-analyze .shell {
-    padding: 16px 12px;
-    gap: 20px;
-    width: 100%;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    background: transparent;
+  /* Header section - consistent across all pages */
+  .skeleton-v2-header {
+    padding: 28px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
   }
 
-  /* Header section */
-  .dashboard-analyze .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+  .skeleton-v2-title {
+    font-size: clamp(1.5rem, 6vw, 2rem) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    margin: 0 0 16px 0 !important;
   }
 
-  .dashboard-analyze .header-title {
-    width: 100%;
-    text-align: left;
-    white-space: normal;
-    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  .skeleton-v2-subtitle {
+    max-width: 100% !important;
+    font-size: 0.95rem !important;
   }
 
-  .dashboard-analyze .header-subtitle {
-    max-width: 100%;
-  }
-
-  .dashboard-analyze .actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .dashboard-analyze .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Analysis grid: stack cards vertically */
-  .dashboard-analyze .analysis-grid {
+  /* Grid: stack cards vertically */
+  .skeleton-v2-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
-    width: 100%;
+    gap: 16px;
+    padding: 28px;
   }
 
   /* Cards */
-  .dashboard-analyze .card {
-    padding: 16px;
-    border-radius: 14px;
+  .skeleton-v2-card {
+    padding: 20px;
+    border-radius: 16px;
     width: 100%;
-    margin: 0 auto;
   }
 
-  /* Upload area */
-  .upload-area {
-    min-height: auto;
-    padding: 12px;
+  /* Upload area - maintain consistent size */
+  .skeleton-v2-upload-area {
+    min-height: 80px;
+    padding: 20px 12px;
     width: 100%;
-    flex: none;
     align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
-  .upload-card-content {
+  .skeleton-v2-upload-content {
     align-items: stretch;
     gap: 12px;
+    width: 100%;
   }
 
-  .dashboard-analyze .upload-label {
+  /* Upload file info - prevent layout shift */
+  .skeleton-v2-upload-file-info {
+    min-height: 32px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .skeleton-v2-upload-label {
     width: auto !important;
     margin: 0 auto;
+    justify-content: center;
   }
 
   /* Upload text: show mobile version, hide desktop */
-  .upload-text-desktop {
+  .skeleton-v2-upload-text-desktop {
     display: none !important;
   }
 
-  .upload-text-mobile {
+  .skeleton-v2-upload-text-mobile {
     display: inline !important;
   }
 
-  .upload-guidance {
+  .skeleton-v2-upload-guidance {
     display: none !important;
   }
 
   /* Analysis options */
-  .analysis-options {
+  .skeleton-v2-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
   }
 
-  .analysis-actions {
+  .skeleton-v2-select-group {
+    width: 100%;
+  }
+
+  .skeleton-v2-select-group select,
+  .skeleton-v2-select-group textarea {
+    width: 100%;
+  }
+
+  /* Actions */
+  .skeleton-v2-actions {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
 
-  .analysis-actions .btn {
+  .skeleton-v2-btn {
     width: 100% !important;
+    justify-content: center;
   }
 
-  .analysis-note {
-    text-align: left;
+  .skeleton-v2-note {
+    text-align: center;
     width: 100%;
   }
 
-  .analysis-progress-container,
-  .analysis-upload-status {
+  /* Progress and error messages */
+  .skeleton-v2-progress,
+  .skeleton-v2-error,
+  .skeleton-v2-limit-message {
     width: 100% !important;
-  }
-
-  /* Results layout: stack vertically */
-  .analysis-layout {
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .form-score-container,
-  .angle-analysis-plot-container,
-  .video-container {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .overall-score-display {
-    font-size: 24px !important;
-  }
-
-  .angle-analysis-plot-container canvas {
-    max-width: 100% !important;
-    height: auto !important;
-  }
-
-  /* Results controls */
-  .results-controls-container,
-  .pre-analysis-controls-container {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-
-  .results-controls-container > label,
-  .pre-analysis-exercise-row > label {
-    width: 100%;
-  }
-
-  .results-controls-container > select,
-  .pre-analysis-exercise-row > select {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex-shrink: 1 !important;
-  }
-
-  .pre-analysis-exercise-row {
-    margin-bottom: 12px !important;
-    flex-wrap: wrap !important;
-    gap: 10px;
-  }
-
-  .results-buttons-container,
-  .pre-analysis-buttons-container {
-    margin-left: 0 !important;
-    width: 100% !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px;
-  }
-
-  .results-buttons-container button,
-  .pre-analysis-buttons-container button {
-    width: 100% !important;
-  }
-
-  /* Filename display: show mobile, hide desktop */
-  .results-filename-desktop,
-  .pre-analysis-filename-desktop {
-    display: none !important;
-  }
-
-  .results-filename-mobile,
-  .pre-analysis-filename-mobile {
-    display: block !important;
-    margin-top: 8px !important;
   }
 }
 
@@ -288,8 +231,14 @@
    PROFILE MENU (ProfileMenu component)
    ================================================================ */
 @media (max-width: 768px) {
-  .profile-menu {
-    margin-left: 0;
+  /* ProfileMenu inside PageHeader - handled by page-header--authenticated rules */
+  .page-header--authenticated .profile-menu {
+    margin-left: 0 !important;
+  }
+
+  /* Standalone profile-menu (for dashboard/index.html) */
+  .app-header-wrapper .profile-menu {
+    margin-left: 0 !important;
   }
 
   .profile-menu .profile-trigger {
@@ -337,13 +286,17 @@
     font-size: clamp(0.95rem, 6vw, 1.85rem);
   }
 
-  .App,
-  .dashboard-analyze {
+  .App {
     padding: 16px 12px;
   }
 
-  .dashboard-analyze .shell {
-    padding: 22px 16px;
+  .skeleton-v2-shell {
+    margin-top: 12px;
+  }
+
+  .skeleton-v2-header,
+  .skeleton-v2-grid {
+    padding: 24px;
   }
 }
 
@@ -355,8 +308,9 @@
     padding: 12px;
   }
 
-  .dashboard-analyze .shell {
-    padding: 18px 12px;
+  .skeleton-v2-header,
+  .skeleton-v2-grid {
+    padding: 20px;
   }
 
   .app-header {

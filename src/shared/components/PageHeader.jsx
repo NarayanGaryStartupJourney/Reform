@@ -39,7 +39,7 @@ const PageHeader = ({ onLoginClick }) => {
         {isLoggedIn ? (
           <a
             className="header-cta"
-            href="/dashboard/index.html"
+            href="/dashboard"
             style={{
               padding: '8px 12px',
               borderRadius: '999px',
