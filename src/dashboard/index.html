@@ -45,6 +45,26 @@
         padding: 20px;
       }
 
+      .footer-link:hover {
+        color: var(--text-primary);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .footer {
+          padding: 20px 16px;
+        }
+
+        .footer-content {
+          font-size: 0.8rem;
+          gap: 6px;
+        }
+
+        .footer-separator {
+          margin: 0 2px;
+        }
+      }
+
       .app-header-container {
         width: min(1200px, 100%);
         max-width: 1200px;
@@ -384,6 +404,42 @@
 
       </section>
     </div>
+
+    <footer class="footer" style="
+      margin-top: auto;
+      padding: 24px 20px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    ">
+      <div class="footer-content" style="
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-align: center;
+      ">
+        <span>Copyright © <script>document.write(new Date().getFullYear())</script></span>
+        <span class="footer-separator" style="color: var(--text-muted); margin: 0 4px;">|</span>
+        <span>All Rights Reserved</span>
+        <span class="footer-separator" style="color: var(--text-muted); margin: 0 4px;">|</span>
+        <a href="/terms" class="footer-link" style="
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color 0.2s ease;
+        ">Terms and Conditions</a>
+        <span class="footer-separator" style="color: var(--text-muted); margin: 0 4px;">|</span>
+        <a href="/privacy" class="footer-link" style="
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color 0.2s ease;
+        ">Privacy Policy</a>
+      </div>
+    </footer>
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
