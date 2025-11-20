@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
+import { getUserToken } from '../shared/utils/authStorage';
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function ProfilePage() {
 
   const fetchUserInfo = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getUserToken();
       if (!token) {
         navigate('/?login=1');
         return;
@@ -83,7 +84,7 @@ function ProfilePage() {
     setIsChangingPassword(true);
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getUserToken();
       const response = await fetch(API_ENDPOINTS.CHANGE_PASSWORD, {
         method: 'POST',
         headers: {

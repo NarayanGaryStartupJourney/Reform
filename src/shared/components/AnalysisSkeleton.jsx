@@ -3,6 +3,7 @@ import '../utils/chartConfig';
 import ScoreBreakdown from './ScoreBreakdown';
 import AnglePlot from './charts/AnglePlot';
 import { API_ENDPOINTS } from '../../config/api';
+import { isUserLoggedIn } from '../utils/authStorage';
 import '../../pages/DashboardAnalyze.css';
 
 const MAX_FILE_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
@@ -28,7 +29,7 @@ const AnalysisSkeleton = ({
   onSignInClick = null
 }) => {
   // Check if user is logged in
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const isLoggedIn = isUserLoggedIn();
 
   // State management
   const [selectedFile, setSelectedFile] = useState(null);

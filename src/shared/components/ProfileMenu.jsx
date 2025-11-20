@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { API_ENDPOINTS } from '../../config/api';
+import { getUserToken, clearUserData, isUserLoggedIn } from '../utils/authStorage';
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +36,7 @@ const ProfileMenu = () => {
 
   // Fetch token count from API
   const fetchTokens = async () => {
-    const token = localStorage.getItem('userToken');
+    const token = getUserToken();
     if (!token) return;
 
     try {
@@ -101,16 +102,8 @@ const ProfileMenu = () => {
   }, [isOpen]);
 
   const handleLogout = () => {
-    // Clear all auth-related data
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('user_email');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('user_name');
+    // Clear all auth-related data using helper function
+    clearUserData();
     // Close the menu before redirecting
     setIsOpen(false);
     // Redirect to landing page

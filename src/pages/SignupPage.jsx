@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
+import { storeUserData } from '../shared/utils/authStorage';
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -78,18 +79,14 @@ function SignupPage() {
 
       const data = await response.json();
 
-      // Store token and user info
-      localStorage.setItem('userToken', data.access_token);
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('userId', data.user_id);
-      localStorage.setItem('user_id', data.user_id);
-      localStorage.setItem('userEmail', data.email);
-      localStorage.setItem('user_email', data.email);
-      localStorage.setItem('userName', data.full_name); // Keep full_name for compatibility
-      localStorage.setItem('user_name', data.full_name);
-      localStorage.setItem('firstName', data.first_name || firstName.trim());
-      localStorage.setItem('lastName', data.last_name || lastName.trim());
-      localStorage.setItem('isLoggedIn', 'true');
+      // Store user data using helper function
+      // Add first_name and last_name to data object for helper function
+      const userData = {
+        ...data,
+        first_name: firstName.trim(),
+        last_name: lastName.trim()
+      };
+      storeUserData(userData);
 
       // Redirect to landing page
       navigate('/');
