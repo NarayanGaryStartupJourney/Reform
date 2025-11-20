@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
 import { getUserToken } from '../shared/utils/authStorage';
+import PageHeader from '../shared/components/PageHeader';
+import PageContainer from '../shared/components/PageContainer';
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -117,81 +119,68 @@ function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ 
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-primary)'
-      }}>
-        <p style={{ color: 'var(--text-primary)' }}>Loading...</p>
-      </div>
+      <PageContainer>
+        <PageHeader onLoginClick={() => navigate('/?login=1')} />
+        <div style={{ 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 0'
+        }}>
+          <p style={{ color: 'var(--text-primary)' }}>Loading...</p>
+        </div>
+      </PageContainer>
     );
   }
 
   if (error && !userInfo) {
     return (
-      <div style={{ 
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-primary)',
-        padding: '20px'
-      }}>
-        <div style={{
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '12px',
-          padding: '24px',
-          maxWidth: '500px',
-          width: '100%'
+      <PageContainer>
+        <PageHeader onLoginClick={() => navigate('/?login=1')} />
+        <div style={{ 
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 0'
         }}>
-          <p style={{ color: 'var(--accent-orange)', marginBottom: '16px' }}>{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              background: 'var(--bg-tertiary)',
-              color: 'var(--text-primary)',
-              cursor: 'pointer'
-            }}
-          >
-            Go Home
-          </button>
+          <div style={{
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '500px',
+            width: '100%'
+          }}>
+            <p style={{ color: 'var(--accent-orange)', marginBottom: '16px' }}>{error}</p>
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer'
+              }}
+            >
+              Go Home
+            </button>
+          </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div style={{ 
-      minHeight: '100vh',
-      padding: '20px',
-      maxWidth: '800px',
-      margin: '0 auto',
-      background: 'var(--bg-primary)'
-    }}>
-      <div style={{ marginBottom: '20px' }}>
-        <button
-          onClick={() => navigate('/')}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '8px',
-            border: '1px solid var(--border-color)',
-            background: 'transparent',
-            color: 'var(--text-primary)',
-            cursor: 'pointer',
-            marginBottom: '20px'
-          }}
-        >
-          ← Back
-        </button>
+    <PageContainer>
+      <PageHeader onLoginClick={() => navigate('/?login=1')} />
+      
+      <div style={{ marginTop: '30px' }}>
         <h1 style={{ 
           color: 'var(--text-primary)',
-          margin: '0 0 30px 0'
+          margin: '0 0 30px 0',
+          fontSize: '2rem',
+          fontWeight: 700
         }}>
           Profile
         </h1>
@@ -432,7 +421,7 @@ function ProfilePage() {
           </form>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }
 
