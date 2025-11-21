@@ -7,6 +7,8 @@ import SignupPage from './pages/SignupPage';
 import ProfilePage from './pages/ProfilePage';
 import FeedPage from './pages/FeedPage';
 import FollowersPage from './pages/FollowersPage';
+import TokensPage from './pages/TokensPage';
+import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import Footer from './shared/components/layout/Footer';
 import './App.css';
 
@@ -21,6 +23,8 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/feed" element={<FeedPage />} />
         <Route path="/followers" element={<FollowersPage />} />
+        <Route path="/tokens" element={<TokensPage />} />
+        <Route path="/tokens/history" element={<TransactionHistoryPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
       <Footer />

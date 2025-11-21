@@ -35,7 +35,10 @@ export const API_ENDPOINTS = {
   USER_POSTS: (username) => `${API_URL}/api/social/users/${username}/posts`,
   PRIVACY: `${API_URL}/api/social/users/me/privacy`,
   MY_FOLLOWERS: `${API_URL}/api/social/users/me/followers`,
-  MY_FOLLOWING: `${API_URL}/api/social/users/me/following`
+  MY_FOLLOWING: `${API_URL}/api/social/users/me/following`,
+  // Token endpoints
+  TOKEN_BALANCE: `${API_URL}/api/tokens/balance`,
+  TOKEN_TRANSACTIONS: `${API_URL}/api/tokens/transactions`
 };
 
 // Only log API URL in development mode for security
