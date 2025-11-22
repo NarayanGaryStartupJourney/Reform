@@ -2,11 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
 import { authenticatedFetchJson } from '../shared/utils/authenticatedFetch';
-import { activateTokens } from '../shared/utils/tokenActivation';
 import PageHeader from '../shared/components/layout/PageHeader';
 import PageContainer from '../shared/components/layout/PageContainer';
 import VerificationBanner from '../shared/components/verification/VerificationBanner';
 import SendVerificationEmailModal from '../shared/components/modals/SendVerificationEmailModal';
+import PasswordChangeSection from '../shared/components/profile/PasswordChangeSection';
+import UsernameEditor from '../shared/components/profile/UsernameEditor';
+import PrivacyToggle from '../shared/components/profile/PrivacyToggle';
+import ProfileAttributes from '../shared/components/profile/ProfileAttributes';
+import TokenActivationSection from '../shared/components/profile/TokenActivationSection';
 import '../shared/styles/AnalysisSkeleton.css';
 import './DashboardPage.css';
 
@@ -17,31 +21,8 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [verificationSuccess, setVerificationSuccess] = useState(false);
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [username, setUsername] = useState('');
-  const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [usernameError, setUsernameError] = useState('');
-  const [usernameSuccess, setUsernameSuccess] = useState('');
-  const [isUpdatingUsername, setIsUpdatingUsername] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
-  const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false);
-  const [privacyError, setPrivacyError] = useState('');
-  const [technicalLevel, setTechnicalLevel] = useState('');
-  const [favoriteExercise, setFavoriteExercise] = useState('');
-  const [communityPreference, setCommunityPreference] = useState('');
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [profileError, setProfileError] = useState('');
-  const [profileSuccess, setProfileSuccess] = useState('');
-  const [isTokenActivated, setIsTokenActivated] = useState(null); // null = unknown, true/false = known
-  const [isActivatingTokens, setIsActivatingTokens] = useState(false);
-  const [tokenActivationError, setTokenActivationError] = useState('');
-  const [tokenActivationSuccess, setTokenActivationSuccess] = useState('');
+  const [isTokenActivated, setIsTokenActivated] = useState(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const checkTokenActivationStatus = useCallback(async () => {
@@ -49,32 +30,24 @@ function ProfilePage() {
       const data = await authenticatedFetchJson(API_ENDPOINTS.TOKEN_BALANCE, {}, navigate);
       setIsTokenActivated(data.is_activated !== false);
     } catch (err) {
-      // Silently fail - we'll show button anyway if status is unknown
       console.error('Failed to check token activation status:', err);
     }
   }, [navigate]);
 
   const fetchUserInfo = useCallback(async () => {
     try {
-      // Parallelize API calls for faster loading
       const [userData, privacyData] = await Promise.allSettled([
         authenticatedFetchJson(API_ENDPOINTS.ME, {}, navigate),
-        authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {}, navigate).catch(() => null) // Optional, don't fail if it errors
+        authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {}, navigate).catch(() => null)
       ]);
       
-      // Process user data
       if (userData.status === 'fulfilled') {
         const data = userData.value;
         setUserInfo(data);
-        setUsername(data.username || '');
-        setTechnicalLevel(data.technical_level || '');
-        setFavoriteExercise(data.favorite_exercise || '');
-        setCommunityPreference(data.community_preference || '');
       } else {
         throw new Error(userData.reason?.message || 'Failed to load profile information');
       }
       
-      // Process privacy data (optional)
       if (privacyData.status === 'fulfilled' && privacyData.value) {
         setIsPublic(privacyData.value.is_public);
       }
@@ -89,174 +62,19 @@ function ProfilePage() {
     fetchUserInfo();
     checkTokenActivationStatus();
     
-    // Check for verification success message
     if (searchParams.get('verified') === 'true') {
       setVerificationSuccess(true);
       setTimeout(() => setVerificationSuccess(false), 5000);
-      // Remove query param from URL
       navigate('/profile', { replace: true });
     }
   }, [fetchUserInfo, checkTokenActivationStatus, searchParams, navigate]);
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setPasswordError('');
-    setPasswordSuccess('');
-
-    // Validation
-    if (!currentPassword) {
-      setPasswordError('Please enter your current password');
-      return;
-    }
-
-    if (!newPassword) {
-      setPasswordError('Please enter a new password');
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setPasswordError('New passwords do not match');
-      return;
-    }
-
-    setIsChangingPassword(true);
-
-    try {
-      await authenticatedFetchJson(API_ENDPOINTS.CHANGE_PASSWORD, {
-        method: 'POST',
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword
-        })
-      }, navigate);
-
-      setPasswordSuccess('Password changed successfully');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setShowChangePassword(false);
-    } catch (err) {
-      setPasswordError(err.message || 'Failed to change password');
-    } finally {
-      setIsChangingPassword(false);
-    }
+  const handleUserInfoUpdate = (updatedInfo) => {
+    setUserInfo(updatedInfo);
   };
 
-  const handleUpdateUsername = async () => {
-    setUsernameError('');
-    setUsernameSuccess('');
-    
-    const trimmedUsername = username.trim().toLowerCase();
-    
-    if (!trimmedUsername) {
-      setUsernameError('Username cannot be empty');
-      return;
-    }
-    
-    setIsUpdatingUsername(true);
-    
-    try {
-      await authenticatedFetchJson(API_ENDPOINTS.UPDATE_USERNAME, {
-        method: 'POST',
-        body: JSON.stringify({
-          username: trimmedUsername
-        })
-      }, navigate);
-
-      setUsernameSuccess('Username updated successfully');
-      setUserInfo({ ...userInfo, username: trimmedUsername });
-      setIsEditingUsername(false);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setUsernameSuccess('');
-      }, 3000);
-    } catch (err) {
-      setUsernameError(err.message || 'Failed to update username');
-    } finally {
-      setIsUpdatingUsername(false);
-    }
-  };
-
-  const handleTogglePrivacy = async () => {
-    setPrivacyError('');
-    setIsUpdatingPrivacy(true);
-    
-    const newPrivacyValue = !isPublic;
-    
-    try {
-      const data = await authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          is_public: newPrivacyValue
-        })
-      }, navigate);
-
-      setIsPublic(data.is_public);
-    } catch (err) {
-      setPrivacyError(err.message || 'Failed to update privacy setting');
-    } finally {
-      setIsUpdatingPrivacy(false);
-    }
-  };
-
-  const handleActivateTokens = async () => {
-    setTokenActivationError('');
-    setTokenActivationSuccess('');
-    setIsActivatingTokens(true);
-
-    try {
-      // Use shared token activation utility for consistency across components
-      const result = await activateTokens();
-
-      setTokenActivationSuccess(result.message);
-      setIsTokenActivated(true);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setTokenActivationSuccess(''), 3000);
-    } catch (err) {
-      setTokenActivationError(err.message || 'Failed to activate tokens');
-    } finally {
-      setIsActivatingTokens(false);
-    }
-  };
-
-  const handleUpdateProfile = async () => {
-    setProfileError('');
-    setProfileSuccess('');
-    setIsUpdatingProfile(true);
-
-    try {
-      const data = await authenticatedFetchJson(API_ENDPOINTS.UPDATE_PROFILE, {
-        method: 'POST',
-        body: JSON.stringify({
-          technical_level: technicalLevel || null,
-          favorite_exercise: favoriteExercise || null,
-          community_preference: communityPreference || null
-        })
-      }, navigate);
-
-      setProfileSuccess('Profile updated successfully');
-      // Update userInfo to reflect changes
-      setUserInfo({
-        ...userInfo,
-        technical_level: data.technical_level,
-        favorite_exercise: data.favorite_exercise,
-        community_preference: data.community_preference
-      });
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setProfileSuccess(''), 3000);
-    } catch (err) {
-      setProfileError(err.message || 'Failed to update profile');
-    } finally {
-      setIsUpdatingProfile(false);
-    }
+  const handlePrivacyUpdate = (newPrivacyValue) => {
+    setIsPublic(newPrivacyValue);
   };
 
   if (loading) {
@@ -312,7 +130,9 @@ function ProfilePage() {
           <div>
             <p className="skeleton-eyebrow">User Profile</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <h1 className="skeleton-title" style={{ margin: 0, fontSize: '1.5rem' }}>{userInfo?.full_name || 'Profile'}</h1>
+              <h1 className="skeleton-title" style={{ margin: 0, fontSize: '1.5rem' }}>
+                {userInfo?.full_name || 'Profile'}
+              </h1>
               {userInfo?.is_pt && (
                 <img 
                   src="https://images.credential.net/badge/tiny/kt0vexxs_1761580077325_badge.png" 
@@ -328,12 +148,10 @@ function ProfilePage() {
           </div>
         </header>
 
-        {/* Verification Banner */}
         {userInfo && !userInfo.is_verified && (
           <VerificationBanner onVerificationComplete={fetchUserInfo} />
         )}
 
-        {/* Verification Success Message */}
         {verificationSuccess && (
           <div style={{
             background: 'rgba(16, 185, 129, 0.1)',
@@ -352,590 +170,131 @@ function ProfilePage() {
           <article className="skeleton-card">
             <h3>Account Information</h3>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--text-secondary)',
-            fontSize: '0.9rem',
-            marginBottom: '8px'
-          }}>
-            Full Name
-          </label>
-          <div style={{
-            padding: '12px',
-            background: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '8px',
-            color: 'var(--text-primary)'
-          }}>
-            {userInfo?.full_name}
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--text-secondary)',
-            fontSize: '0.9rem',
-            marginBottom: '8px'
-          }}>
-            Email
-          </label>
-          <div style={{
-            padding: '12px',
-            background: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '8px',
-            color: 'var(--text-primary)'
-          }}>
-            {userInfo?.email}
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--text-secondary)',
-            fontSize: '0.9rem',
-            marginBottom: '8px'
-          }}>
-            Username
-          </label>
-          {isEditingUsername ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isUpdatingUsername}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: 'var(--bg-tertiary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.95rem'
-                }}
-                placeholder="Enter username"
-              />
-              {usernameError && (
-                <p style={{ color: 'var(--accent-orange)', margin: 0, fontSize: '0.85rem' }}>
-                  {usernameError}
-                </p>
-              )}
-              {usernameSuccess && (
-                <p style={{ color: 'var(--accent-green)', margin: 0, fontSize: '0.85rem' }}>
-                  {usernameSuccess}
-                </p>
-              )}
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={handleUpdateUsername}
-                  disabled={isUpdatingUsername}
-                  className="btn btn-primary"
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: '0.9rem',
-                    opacity: isUpdatingUsername ? 0.7 : 1,
-                    cursor: isUpdatingUsername ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {isUpdatingUsername ? 'Saving...' : 'Save'}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsEditingUsername(false);
-                    setUsername(userInfo?.username || '');
-                    setUsernameError('');
-                    setUsernameSuccess('');
-                  }}
-                  disabled={isUpdatingUsername}
-                  className="btn btn-secondary"
-                  style={{
-                    padding: '8px 16px',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                color: 'var(--text-secondary)',
+                fontSize: '0.9rem',
+                marginBottom: '8px'
+              }}>
+                Full Name
+              </label>
               <div style={{
                 padding: '12px',
                 background: 'var(--bg-tertiary)',
                 border: '1px solid var(--border-color)',
                 borderRadius: '8px',
-                color: userInfo?.username ? 'var(--text-primary)' : 'var(--text-muted)',
-                fontSize: '0.95rem',
-                flex: 1
+                color: 'var(--text-primary)'
               }}>
-                {userInfo?.username || 'Not set'}
+                {userInfo?.full_name}
               </div>
-              <button
-                onClick={() => setIsEditingUsername(true)}
-                className="btn btn-secondary"
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '0.9rem',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {userInfo?.username ? 'Edit' : 'Set Username'}
-              </button>
             </div>
-          )}
-        </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--text-secondary)',
-            fontSize: '0.9rem',
-            marginBottom: '8px'
-          }}>
-            Email Verification Status
-          </label>
-          <div style={{
-            padding: '12px',
-            background: userInfo?.is_verified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-            border: `1px solid ${userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)'}`,
-            borderRadius: '8px',
-            color: userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            {userInfo?.is_verified ? '✅ Verified' : '❌ Unverified'}
-            {!userInfo?.is_verified && (
-              <span style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>
-                <button
-                  onClick={() => setShowVerificationModal(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--accent-green)',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    padding: 0,
-                    fontSize: '0.85rem',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  Verify now
-                </button>
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Token Activation Section */}
-        {isTokenActivated === false && (
-          <div style={{ marginBottom: '20px', padding: '16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-green)', borderRadius: '8px' }}>
-            <div style={{ marginBottom: '12px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <label style={{
                 display: 'block',
-                color: 'var(--text-primary)',
+                color: 'var(--text-secondary)',
                 fontSize: '0.9rem',
-                fontWeight: 600,
                 marginBottom: '8px'
               }}>
-                Get Started with Tokens
+                Email
               </label>
-              <p style={{
-                margin: 0,
-                color: 'var(--text-secondary)',
-                fontSize: '0.85rem',
-                lineHeight: '1.5'
+              <div style={{
+                padding: '12px',
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                color: 'var(--text-primary)'
               }}>
-                Activate your token system to get 10 free tokens. This is a one-time activation that starts your monthly token cycle.
-              </p>
+                {userInfo?.email}
+              </div>
             </div>
-            {tokenActivationError && (
-              <p style={{ color: 'var(--accent-orange)', margin: '0 0 12px 0', fontSize: '0.85rem' }}>
-                {tokenActivationError}
-              </p>
-            )}
-            {tokenActivationSuccess && (
-              <p style={{ color: 'var(--accent-green)', margin: '0 0 12px 0', fontSize: '0.85rem' }}>
-                {tokenActivationSuccess}
-              </p>
-            )}
-            <button
-              onClick={handleActivateTokens}
-              disabled={isActivatingTokens}
-              className="btn btn-primary"
-              style={{
-                padding: '10px 20px',
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                opacity: isActivatingTokens ? 0.7 : 1,
-                cursor: isActivatingTokens ? 'not-allowed' : 'pointer',
-                width: '100%'
-              }}
-            >
-              {isActivatingTokens ? 'Activating...' : 'Get 10 Free Tokens'}
-            </button>
-          </div>
-        )}
 
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <label style={{
-              display: 'block',
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem',
-              margin: 0
-            }}>
-              Password
-            </label>
-            {!showChangePassword && (
-              <button
-                onClick={() => setShowChangePassword(true)}
-                className="btn btn-secondary"
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '0.9rem'
-                }}
-              >
-                Change Password
-              </button>
-            )}
-          </div>
+            <UsernameEditor 
+              userInfo={userInfo} 
+              navigate={navigate} 
+              onUpdate={handleUserInfoUpdate}
+            />
 
-          {showChangePassword && (
-            <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--bg-tertiary)',
-                    color: 'var(--text-primary)'
-                  }}
-                />
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                color: 'var(--text-secondary)',
+                fontSize: '0.9rem',
+                marginBottom: '8px'
+              }}>
+                Email Verification Status
+              </label>
+              <div style={{
+                padding: '12px',
+                background: userInfo?.is_verified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)'}`,
+                borderRadius: '8px',
+                color: userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                {userInfo?.is_verified ? '✅ Verified' : '❌ Unverified'}
+                {!userInfo?.is_verified && (
+                  <span style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>
+                    <button
+                      onClick={() => setShowVerificationModal(true)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--accent-green)',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontSize: '0.85rem',
+                        fontFamily: 'inherit'
+                      }}
+                    >
+                      Verify now
+                    </button>
+                  </span>
+                )}
               </div>
+            </div>
 
-              <div>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--bg-tertiary)',
-                    color: 'var(--text-primary)'
-                  }}
-                />
-              </div>
+            <TokenActivationSection 
+              isTokenActivated={isTokenActivated}
+              onActivationComplete={setIsTokenActivated}
+            />
 
-              <div>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    background: 'var(--bg-tertiary)',
-                    color: 'var(--text-primary)'
-                  }}
-                />
-              </div>
-
-              {passwordError && (
-                <p style={{ color: 'var(--accent-orange)', margin: 0, fontSize: '0.9rem' }}>
-                  {passwordError}
-                </p>
-              )}
-
-              {passwordSuccess && (
-                <p style={{ color: 'var(--accent-green)', margin: 0, fontSize: '0.9rem' }}>
-                  {passwordSuccess}
-                </p>
-              )}
-
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  type="submit"
-                  disabled={isChangingPassword}
-                  className="btn btn-primary"
-                  style={{
-                    opacity: isChangingPassword ? 0.7 : 1,
-                    cursor: isChangingPassword ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {isChangingPassword ? 'Changing...' : 'Update Password'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowChangePassword(false);
-                    setCurrentPassword('');
-                    setNewPassword('');
-                    setConfirmPassword('');
-                    setPasswordError('');
-                    setPasswordSuccess('');
-                  }}
-                  className="btn btn-secondary"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
+            <PasswordChangeSection navigate={navigate} />
           </article>
 
           <article className="skeleton-card">
             <h3 style={{ margin: '0 0 20px 0' }}>Account Settings</h3>
             
-            {/* Privacy Toggle Section */}
-            <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  margin: 0
-                }}>
-                  Profile Privacy
-                </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ 
-                    fontSize: '0.85rem', 
-                    color: isPublic ? 'var(--text-secondary)' : 'var(--text-primary)',
-                    fontWeight: isPublic ? 'normal' : '600'
-                  }}>
-                    Private
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleTogglePrivacy}
-                    disabled={isUpdatingPrivacy}
-                    style={{
-                      position: 'relative',
-                      width: '48px',
-                      height: '24px',
-                      borderRadius: '12px',
-                      border: 'none',
-                      background: isPublic ? 'var(--accent-green)' : 'var(--bg-tertiary)',
-                      cursor: isUpdatingPrivacy ? 'not-allowed' : 'pointer',
-                      opacity: isUpdatingPrivacy ? 0.7 : 1,
-                      transition: 'background 0.2s ease',
-                      outline: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isUpdatingPrivacy) {
-                        e.target.style.opacity = '0.9';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isUpdatingPrivacy) {
-                        e.target.style.opacity = '1';
-                      }
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: '2px',
-                        left: isPublic ? '26px' : '2px',
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        background: '#fff',
-                        transition: 'left 0.2s ease',
-                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                      }}
-                    />
-                  </button>
-                  <span style={{ 
-                    fontSize: '0.85rem', 
-                    color: isPublic ? 'var(--text-primary)' : 'var(--text-secondary)',
-                    fontWeight: isPublic ? '600' : 'normal'
-                  }}>
-                    Public
-                  </span>
-                </div>
-              </div>
-              <p style={{ 
-                margin: '8px 0 0 0', 
-                fontSize: '0.85rem', 
-                color: 'var(--text-secondary)' 
-              }}>
-                {isPublic 
-                  ? 'Your profile and posts are visible to everyone' 
-                  : 'Your profile and posts are only visible to followers'}
-              </p>
-              {privacyError && (
-                <p style={{ color: 'var(--accent-orange)', margin: '8px 0 0 0', fontSize: '0.85rem' }}>
-                  {privacyError}
-                </p>
-              )}
-            </div>
+            <PrivacyToggle 
+              isPublic={isPublic}
+              navigate={navigate}
+              onUpdate={handlePrivacyUpdate}
+            />
 
-            {/* Profile Attributes Section */}
-            <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid var(--border-color)' }}>
-              <h3 style={{ margin: '0 0 20px 0' }}>Profile Attributes</h3>
-              
-              {/* Technical Level */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  Technical Level
-                </label>
-                <select
-                  value={technicalLevel}
-                  onChange={(e) => setTechnicalLevel(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.95rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="">Select level...</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="novice">Novice</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                  <option value="elite">Elite</option>
-                </select>
-              </div>
-
-              {/* Favorite Exercise */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  Favorite Exercise
-                </label>
-                <input
-                  type="text"
-                  value={favoriteExercise}
-                  onChange={(e) => setFavoriteExercise(e.target.value)}
-                  placeholder="Enter favorite exercise (dropdown coming soon)"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.95rem'
-                  }}
-                />
-              </div>
-
-              {/* Community Preference */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: 'var(--text-secondary)',
-                  fontSize: '0.9rem',
-                  marginBottom: '8px'
-                }}>
-                  Community Preference
-                </label>
-                <select
-                  value={communityPreference}
-                  onChange={(e) => setCommunityPreference(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    color: 'var(--text-primary)',
-                    fontSize: '0.95rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="">Select preference...</option>
-                  <option value="share_to_similar_levels">Share to Similar Levels</option>
-                  <option value="share_to_pt">Share to PT</option>
-                  <option value="compete_with_someone">Compete with Someone</option>
-                </select>
-              </div>
-
-              {profileError && (
-                <p style={{ color: 'var(--accent-orange)', margin: '0 0 12px 0', fontSize: '0.85rem' }}>
-                  {profileError}
-                </p>
-              )}
-              {profileSuccess && (
-                <p style={{ color: 'var(--accent-green)', margin: '0 0 12px 0', fontSize: '0.85rem' }}>
-                  {profileSuccess}
-                </p>
-              )}
-              <button
-                onClick={handleUpdateProfile}
-                disabled={isUpdatingProfile}
-                className="btn btn-primary"
-                style={{
-                  padding: '8px 16px',
-                  fontSize: '0.9rem',
-                  opacity: isUpdatingProfile ? 0.7 : 1,
-                  cursor: isUpdatingProfile ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isUpdatingProfile ? 'Saving...' : 'Save Profile Attributes'}
-              </button>
-            </div>
+            <ProfileAttributes 
+              userInfo={userInfo}
+              navigate={navigate}
+              onUpdate={handleUserInfoUpdate}
+            />
           </article>
         </div>
       </div>
+
+      {showVerificationModal && (
+        <SendVerificationEmailModal
+          onClose={() => setShowVerificationModal(false)}
+          onSuccess={() => {
+            setShowVerificationModal(false);
+            fetchUserInfo();
+          }}
+        />
+      )}
     </PageContainer>
   );
 }
 
 export default ProfilePage;
-

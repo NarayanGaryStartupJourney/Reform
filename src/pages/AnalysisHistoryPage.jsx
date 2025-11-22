@@ -9,6 +9,7 @@ import PageContainer from '../shared/components/layout/PageContainer';
 import PageHeader from '../shared/components/layout/PageHeader';
 import ScoreBreakdown from '../shared/components/ScoreBreakdown';
 import AnglePlot from '../shared/components/charts/AnglePlot';
+import AnalysisFilterBar from '../shared/components/analysis/AnalysisFilterBar';
 import '../shared/styles/AnalysisSkeleton.css';
 import './AnalysisHistoryPage.css';
 
@@ -105,11 +106,23 @@ const AnalysisHistoryPage = () => {
     setOffset(0);
   };
 
-  const handleScoreChange = () => {
+  const handleMinScoreChange = (e) => {
+    setMinScore(e.target.value);
     setOffset(0);
   };
 
-  const handleDateChange = () => {
+  const handleMaxScoreChange = (e) => {
+    setMaxScore(e.target.value);
+    setOffset(0);
+  };
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+    setOffset(0);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
     setOffset(0);
   };
 
@@ -206,234 +219,48 @@ const AnalysisHistoryPage = () => {
           </div>
         </header>
 
-        {/* Search/Filter Card at Top */}
-        <article className="skeleton-card" style={{ marginBottom: '0' }}>
-          <div style={{ padding: '24px' }}>
-            <div className="analysis-filters">
-              <div style={{ marginBottom: '20px' }}>
-                <h3 style={{
-                  margin: '0 0 16px 0',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)'
-                }}>
-                  Search & Filters
-                </h3>
-                  
-                  <div style={{
-                    display: 'flex',
-                    gap: '12px',
-                    alignItems: 'flex-end',
-                    marginBottom: '16px',
-                    flexWrap: 'wrap'
-                  }}>
-                    {/* Exercise Filter */}
-                    <div style={{ width: 'fit-content' }}>
-                      <label style={{
-                        display: 'block',
-                        marginBottom: '8px',
-                        fontSize: '0.9rem',
-                        color: 'var(--text-secondary)',
-                        fontWeight: 500
-                      }}>
-                        Exercise
-                      </label>
-                      <select
-                        value={exerciseFilter === null ? '' : exerciseFilter}
-                        onChange={handleExerciseChange}
-                        style={{
-                          width: 'auto',
-                          minWidth: '140px',
-                          padding: '8px 12px',
-                          fontSize: '0.9rem',
-                          border: '1px solid var(--border-color)',
-                          borderRadius: '6px',
-                          background: 'var(--bg-primary)',
-                          color: 'var(--text-primary)'
-                        }}
-                      >
-                        <option value="">All Exercises</option>
-                        <option value="1">Squat</option>
-                        <option value="2">Bench</option>
-                        <option value="3">Deadlift</option>
-                      </select>
-                    </div>
+        <AnalysisFilterBar
+          exerciseFilter={exerciseFilter}
+          minScore={minScore}
+          maxScore={maxScore}
+          startDate={startDate}
+          endDate={endDate}
+          onExerciseChange={handleExerciseChange}
+          onMinScoreChange={handleMinScoreChange}
+          onMaxScoreChange={handleMaxScoreChange}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+          onClearFilters={handleClearFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
 
-                    {/* Score Range and Date Range - Grouped together */}
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end', flex: 1 }}>
-                      <div style={{ flex: '0 0 100px' }}>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '8px',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-secondary)',
-                          fontWeight: 500
-                        }}>
-                          Min Score
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={minScore}
-                          onChange={(e) => {
-                            setMinScore(e.target.value);
-                            handleScoreChange();
-                          }}
-                          placeholder="0"
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '0.9rem',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '6px',
-                            background: 'var(--bg-primary)',
-                            color: 'var(--text-primary)'
-                          }}
-                        />
-                      </div>
-
-                      <div style={{ flex: '0 0 100px' }}>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '8px',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-secondary)',
-                          fontWeight: 500
-                        }}>
-                          Max Score
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={maxScore}
-                          onChange={(e) => {
-                            setMaxScore(e.target.value);
-                            handleScoreChange();
-                          }}
-                          placeholder="100"
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '0.9rem',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '6px',
-                            background: 'var(--bg-primary)',
-                            color: 'var(--text-primary)'
-                          }}
-                        />
-                      </div>
-
-                      <div style={{ flex: '0 0 160px' }}>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '8px',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-secondary)',
-                          fontWeight: 500
-                        }}>
-                          Start Date
-                        </label>
-                        <input
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => {
-                            setStartDate(e.target.value);
-                            handleDateChange();
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '0.9rem',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '6px',
-                            background: 'var(--bg-primary)',
-                            color: 'var(--text-primary)'
-                          }}
-                        />
-                      </div>
-
-                      <div style={{ flex: '0 0 160px' }}>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '8px',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-secondary)',
-                          fontWeight: 500
-                        }}>
-                          End Date
-                        </label>
-                        <input
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => {
-                            setEndDate(e.target.value);
-                            handleDateChange();
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            fontSize: '0.9rem',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '6px',
-                            background: 'var(--bg-primary)',
-                            color: 'var(--text-primary)'
-                          }}
-                        />
-                      </div>
-
-                      {hasActiveFilters && (
-                        <button
-                          onClick={handleClearFilters}
-                          className="btn"
-                          style={{
-                            padding: '8px 16px',
-                            fontSize: '0.9rem',
-                            background: 'var(--bg-secondary)',
-                            border: '1px solid var(--border-color)',
-                            color: 'var(--text-primary)',
-                            marginLeft: 'auto',
-                            height: 'fit-content'
-                          }}
-                        >
-                          Clear Filters
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-            </div>
-
-              {/* Error Message */}
-              {error && (
-                <div style={{
-                  marginTop: '16px',
-                  padding: '12px 16px',
-                  background: 'var(--accent-orange)',
-                  color: 'white',
-                  borderRadius: '8px',
-                  fontSize: '0.9rem'
-                }}>
-                  {error}
-                  <button
-                    onClick={fetchAnalyses}
-                    className="btn"
-                    style={{
-                      marginLeft: '12px',
-                      padding: '4px 12px',
-                      fontSize: '0.85rem',
-                      background: 'rgba(255, 255, 255, 0.2)',
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      color: 'white'
-                    }}
-                  >
-                    Retry
-                  </button>
-                </div>
-              )}
-            </div>
-        </article>
+        {/* Error Message */}
+        {error && (
+          <div style={{
+            marginTop: '16px',
+            padding: '12px 16px',
+            background: 'var(--accent-orange)',
+            color: 'white',
+            borderRadius: '8px',
+            fontSize: '0.9rem'
+          }}>
+            {error}
+            <button
+              onClick={fetchAnalyses}
+              className="btn"
+              style={{
+                marginLeft: '12px',
+                padding: '4px 12px',
+                fontSize: '0.85rem',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                color: 'white'
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Main Content: List and Details */}
         <div className="skeleton-grid">

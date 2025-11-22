@@ -5,6 +5,12 @@ import '../shared/utils/chartConfig'; // Ensure Chart.js is registered
 import { getProgressMetrics } from '../shared/utils/analysisApi';
 import { useRequireAuth } from '../shared/utils/useRequireAuth';
 import { formatDateTime, formatDateOnly } from '../shared/utils/dateFormat';
+import { 
+  getScoreTrendData, 
+  getExerciseBreakdownData, 
+  getChartColors, 
+  getBaseChartOptions 
+} from '../shared/utils/chartDataUtils';
 import PageContainer from '../shared/components/layout/PageContainer';
 import PageHeader from '../shared/components/layout/PageHeader';
 import '../shared/styles/AnalysisSkeleton.css';
@@ -40,195 +46,10 @@ const ProgressDashboardPage = () => {
     return 'var(--score-poor)';
   };
 
-  const getScoreTrendData = () => {
-    if (!metrics?.score_trend || metrics.score_trend.length === 0) {
-      return null;
-    }
-
-    const sortedTrend = [...metrics.score_trend].sort((a, b) => 
-      new Date(a.date) - new Date(b.date)
-    );
-
-    // Get all unique dates for labels
-    const allDates = [...new Set(sortedTrend.map(item => item.date))].sort((a, b) => 
-      new Date(a) - new Date(b)
-    );
-    const labels = allDates.map(date => formatDateOnly(date));
-
-    // Group by exercise and create datasets
-    const exerciseGroups = {};
-    sortedTrend.forEach(item => {
-      const exercise = item.exercise || 'Overall';
-      if (!exerciseGroups[exercise]) {
-        exerciseGroups[exercise] = {};
-      }
-      exerciseGroups[exercise][item.date] = item.score;
-    });
-
-    // Exercise colors
-    const exerciseColors = {
-      'Squat': { border: '#4CAF50', bg: 'rgba(76, 175, 80, 0.15)', point: '#4CAF50', hover: '#66BB6A' },
-      'Bench': { border: '#2196F3', bg: 'rgba(33, 150, 243, 0.15)', point: '#2196F3', hover: '#42A5F5' },
-      'Deadlift': { border: '#FF9800', bg: 'rgba(255, 152, 0, 0.15)', point: '#FF9800', hover: '#FFB74D' },
-      'Overall': { border: '#4CAF50', bg: 'rgba(76, 175, 80, 0.15)', point: '#4CAF50', hover: '#66BB6A' }
-    };
-
-    // Create dataset for each exercise
-    const datasets = Object.keys(exerciseGroups).map(exercise => {
-      const color = exerciseColors[exercise] || exerciseColors['Overall'];
-      // Map each date to its score (or null if no data for that date)
-      const data = allDates.map(date => exerciseGroups[exercise][date] || null);
-      
-      return {
-        label: exercise,
-        data: data,
-        borderColor: color.border,
-        backgroundColor: color.bg,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        pointBackgroundColor: color.point,
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        pointHoverBackgroundColor: color.hover,
-        pointHoverBorderColor: '#ffffff',
-        pointHoverBorderWidth: 3,
-        spanGaps: false  // Don't connect points across gaps
-      };
-    });
-
-    return {
-      labels,
-      datasets
-    };
-  };
-
-  const getExerciseBreakdownData = () => {
-    if (!metrics?.analyses_by_exercise) {
-      return null;
-    }
-
-    const exerciseNames = {
-      'Squat': 'Squat',
-      'Bench': 'Bench',
-      'Deadlift': 'Deadlift'
-    };
-
-    const labels = Object.keys(metrics.analyses_by_exercise).map(
-      key => exerciseNames[key] || key
-    );
-    const data = Object.values(metrics.analyses_by_exercise);
-    const maxValue = Math.max(...data, 0);
-
-    const chartColors = [
-      { bg: 'rgba(76, 175, 80, 0.8)', border: '#4CAF50' },
-      { bg: 'rgba(33, 150, 243, 0.8)', border: '#2196F3' },
-      { bg: 'rgba(255, 152, 0, 0.8)', border: '#FF9800' },
-      { bg: 'rgba(156, 39, 176, 0.8)', border: '#9C27B0' },
-      { bg: 'rgba(244, 67, 54, 0.8)', border: '#F44336' }
-    ];
-
-    return {
-      labels,
-      datasets: [
-        {
-          label: 'Number of Analyses',
-          data,
-          backgroundColor: labels.map((_, i) => chartColors[i % chartColors.length].bg),
-          borderColor: labels.map((_, i) => chartColors[i % chartColors.length].border),
-          borderWidth: 2,
-          borderRadius: 6,
-          borderSkipped: false
-        }
-      ],
-      maxValue
-    };
-  };
-
-  const scoreTrendData = getScoreTrendData();
-  const exerciseBreakdownData = getExerciseBreakdownData();
-
-  const getComputedColor = (cssVar, fallback) => {
-    if (typeof window === 'undefined') return fallback;
-    const root = document.documentElement;
-    const value = getComputedStyle(root).getPropertyValue(cssVar).trim();
-    return value || fallback;
-  };
-
-  const colors = {
-    text: getComputedColor('--text-primary', '#333333'),
-    textSecondary: getComputedColor('--text-secondary', '#666666'),
-    grid: getComputedColor('--border-color', 'rgba(0, 0, 0, 0.1)')
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          color: colors.text,
-          font: {
-            family: 'Inter, sans-serif',
-            size: 12,
-            weight: 500
-          },
-          padding: 15,
-          usePointStyle: true
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        borderWidth: 1,
-        padding: 12,
-        titleFont: {
-          size: 13,
-          weight: 'bold'
-        },
-        bodyFont: {
-          size: 12
-        },
-        cornerRadius: 6
-      }
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: colors.textSecondary,
-          font: {
-            family: 'Inter, sans-serif',
-            size: 11
-          }
-        },
-        grid: {
-          color: colors.grid,
-          drawBorder: false
-        }
-      },
-      y: {
-        ticks: {
-          color: colors.textSecondary,
-          font: {
-            family: 'Inter, sans-serif',
-            size: 11
-          },
-          stepSize: 1,
-          precision: 0
-        },
-        grid: {
-          color: colors.grid,
-          drawBorder: false
-        },
-        beginAtZero: true
-      }
-    }
-  };
+  const scoreTrendData = getScoreTrendData(metrics);
+  const exerciseBreakdownData = getExerciseBreakdownData(metrics);
+  const colors = getChartColors();
+  const chartOptions = getBaseChartOptions(colors);
 
   const barChartOptions = exerciseBreakdownData ? {
     ...chartOptions,
