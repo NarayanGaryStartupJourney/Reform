@@ -35,11 +35,20 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         })
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.detail || 'Login failed');
+        // Try to parse error response, but handle cases where it's not JSON
+        let errorMessage = 'Login failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text or default message
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
+
+      const data = await response.json();
 
       // Store user data using helper function
       storeUserData(data);
@@ -57,7 +66,22 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         onLoginSuccess();
       }
     } catch (err) {
-      setLoginError(err.message || 'Invalid credentials. Please check your email and password.');
+      // Handle network errors and other exceptions
+      let errorMessage = 'Invalid credentials. Please check your email and password.';
+      
+      if (err.message) {
+        // If it's a network error (fetch failed), provide a more helpful message
+        if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('Load Failed')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (err.message.includes('CORS') || err.message.includes('cross-origin')) {
+          errorMessage = 'Connection error. Please try again later.';
+        } else {
+          // Use the error message from the server or the caught error
+          errorMessage = err.message;
+        }
+      }
+      
+      setLoginError(errorMessage);
     } finally {
       setIsLoading(false);
     }
