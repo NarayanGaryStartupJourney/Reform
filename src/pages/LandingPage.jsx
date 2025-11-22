@@ -67,11 +67,8 @@ function LandingPage() {
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
     // Use React Router navigate instead of window.location to avoid full page reload
-    // Wait a bit longer to ensure cookies are processed by browser before navigating
-    // This prevents 401 errors when dashboard immediately tries to fetch data
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 500);
+    // Authorization header fallback ensures authentication works even if cookies aren't ready
+    navigate('/dashboard');
   };
 
   const handleAnalysisComplete = (data) => {
