@@ -5,8 +5,10 @@
   "main": "App.jsx",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
@@ -15,12 +17,13 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.30.2",
-    "react-scripts": "5.0.1"
+    "react-router-dom": "^6.30.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.0",
-    "@testing-library/react": "^14.0.0"
+    "@testing-library/react": "^14.0.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "vite": "^7.2.4"
   },
   "eslintConfig": {
     "extends": [

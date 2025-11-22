@@ -4,8 +4,9 @@
  */
 
 const getApiUrl = () => {
-  if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL;
+  // Vite uses import.meta.env.VITE_* for environment variables
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
   }
   return 'http://127.0.0.1:8000';
 };
@@ -46,7 +47,7 @@ export const API_ENDPOINTS = {
 };
 
 // Only log API URL in development mode for security
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   console.log('🔗 API URL:', API_URL);
   console.log('🔗 Upload endpoint:', API_ENDPOINTS.UPLOAD_VIDEO);
 }
