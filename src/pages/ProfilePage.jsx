@@ -6,6 +6,7 @@ import { activateTokens } from '../shared/utils/tokenActivation';
 import PageHeader from '../shared/components/layout/PageHeader';
 import PageContainer from '../shared/components/layout/PageContainer';
 import VerificationBanner from '../shared/components/verification/VerificationBanner';
+import SendVerificationEmailModal from '../shared/components/modals/SendVerificationEmailModal';
 import '../shared/styles/AnalysisSkeleton.css';
 import './DashboardPage.css';
 
@@ -41,6 +42,7 @@ function ProfilePage() {
   const [isActivatingTokens, setIsActivatingTokens] = useState(false);
   const [tokenActivationError, setTokenActivationError] = useState('');
   const [tokenActivationSuccess, setTokenActivationSuccess] = useState('');
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const checkTokenActivationStatus = useCallback(async () => {
     try {
@@ -430,40 +432,6 @@ function ProfilePage() {
         <div className="skeleton-grid">
           <article className="skeleton-card">
             <h3>Account Information</h3>
-            
-            {/* Email Verification Status */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                color: 'var(--text-secondary)',
-                fontSize: '0.9rem',
-                marginBottom: '8px'
-              }}>
-                Email Verification Status
-              </label>
-              <div style={{
-                padding: '12px',
-                background: userInfo?.is_verified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                border: `1px solid ${userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)'}`,
-                borderRadius: '8px',
-                color: userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                {userInfo?.is_verified ? '✅ Verified' : '❌ Unverified'}
-                {!userInfo?.is_verified && (
-                  <span style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>
-                    <a 
-                      href="/verify-email" 
-                      style={{ color: 'var(--accent-green)', textDecoration: 'underline' }}
-                    >
-                      Verify now
-                    </a>
-                  </span>
-                )}
-              </div>
-            </div>
 
         <div style={{ marginBottom: '20px' }}>
           <label style={{
@@ -609,16 +577,38 @@ function ProfilePage() {
             fontSize: '0.9rem',
             marginBottom: '8px'
           }}>
-            Account Status
+            Email Verification Status
           </label>
           <div style={{
             padding: '12px',
-            background: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-color)',
+            background: userInfo?.is_verified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            border: `1px solid ${userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)'}`,
             borderRadius: '8px',
-            color: 'var(--text-primary)'
+            color: userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            {userInfo?.is_verified ? '✓ Verified' : '⚠ Not Verified - Coming Soon'}
+            {userInfo?.is_verified ? '✅ Verified' : '❌ Unverified'}
+            {!userInfo?.is_verified && (
+              <span style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>
+                <button
+                  onClick={() => setShowVerificationModal(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--accent-green)',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    padding: 0,
+                    fontSize: '0.85rem',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  Verify now
+                </button>
+              </span>
+            )}
           </div>
         </div>
 

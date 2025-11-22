@@ -63,6 +63,12 @@ const VerificationBanner = ({ onVerificationComplete }) => {
             onClick={handleSendEmail}
             disabled={isSending}
             className="btn btn-primary"
+            style={{
+              padding: '8px 16px',
+              fontSize: '0.9rem',
+              opacity: isSending ? 0.7 : 1,
+              cursor: isSending ? 'not-allowed' : 'pointer'
+            }}
           >
             {isSending ? 'Sending...' : 'Send Verification Email'}
           </button>
