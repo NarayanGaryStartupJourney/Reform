@@ -36,13 +36,11 @@ const ProfileMenu = () => {
 
   // Fetch token count from API
   const fetchTokens = async () => {
-    const token = getUserToken();
-    if (!token) return;
-
     try {
       const response = await fetch(API_ENDPOINTS.ME, {
+        credentials: 'include', // Include cookies for authentication
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       });
 

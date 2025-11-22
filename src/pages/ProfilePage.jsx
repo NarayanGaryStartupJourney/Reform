@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
-import { getUserToken } from '../shared/utils/authStorage';
 import { authenticatedFetchJson } from '../shared/utils/authenticatedFetch';
 import { activateTokens } from '../shared/utils/tokenActivation';
 import PageHeader from '../shared/components/layout/PageHeader';
@@ -47,41 +46,37 @@ function ProfilePage() {
 
   const checkTokenActivationStatus = useCallback(async () => {
     try {
-      const token = getUserToken();
-      if (!token) return;
-
-      const response = await fetch(API_ENDPOINTS.TOKEN_BALANCE, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setIsTokenActivated(data.is_activated !== false);
-      }
+      const data = await authenticatedFetchJson(API_ENDPOINTS.TOKEN_BALANCE, {}, navigate);
+      setIsTokenActivated(data.is_activated !== false);
     } catch (err) {
       // Silently fail - we'll show button anyway if status is unknown
       console.error('Failed to check token activation status:', err);
     }
-  }, []); // No dependencies - only uses stable functions
+  }, [navigate]);
 
   const fetchUserInfo = useCallback(async () => {
     try {
-      const data = await authenticatedFetchJson(API_ENDPOINTS.ME, {}, navigate);
-      setUserInfo(data);
-      setUsername(data.username || '');
-      setTechnicalLevel(data.technical_level || '');
-      setFavoriteExercise(data.favorite_exercise || '');
-      setCommunityPreference(data.community_preference || '');
+      // Parallelize API calls for faster loading
+      const [userData, privacyData] = await Promise.allSettled([
+        authenticatedFetchJson(API_ENDPOINTS.ME, {}, navigate),
+        authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {}, navigate).catch(() => null) // Optional, don't fail if it errors
+      ]);
       
-      // Fetch privacy setting (optional, don't fail if it errors)
-      try {
-        const privacyData = await authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {}, navigate);
-        setIsPublic(privacyData.is_public);
-      } catch (err) {
-        // Silently fail - privacy setting is optional
-        console.warn('Failed to fetch privacy setting:', err);
+      // Process user data
+      if (userData.status === 'fulfilled') {
+        const data = userData.value;
+        setUserInfo(data);
+        setUsername(data.username || '');
+        setTechnicalLevel(data.technical_level || '');
+        setFavoriteExercise(data.favorite_exercise || '');
+        setCommunityPreference(data.community_preference || '');
+      } else {
+        throw new Error(userData.reason?.message || 'Failed to load profile information');
+      }
+      
+      // Process privacy data (optional)
+      if (privacyData.status === 'fulfilled' && privacyData.value) {
+        setIsPublic(privacyData.value.is_public);
       }
     } catch (err) {
       setError(err.message || 'Failed to load profile information');
@@ -132,24 +127,13 @@ function ProfilePage() {
     setIsChangingPassword(true);
 
     try {
-      const token = getUserToken();
-      const response = await fetch(API_ENDPOINTS.CHANGE_PASSWORD, {
+      await authenticatedFetchJson(API_ENDPOINTS.CHANGE_PASSWORD, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           current_password: currentPassword,
           new_password: newPassword
         })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to change password');
-      }
+      }, navigate);
 
       setPasswordSuccess('Password changed successfully');
       setCurrentPassword('');
@@ -177,23 +161,12 @@ function ProfilePage() {
     setIsUpdatingUsername(true);
     
     try {
-      const token = getUserToken();
-      const response = await fetch(API_ENDPOINTS.UPDATE_USERNAME, {
+      await authenticatedFetchJson(API_ENDPOINTS.UPDATE_USERNAME, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           username: trimmedUsername
         })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to update username');
-      }
+      }, navigate);
 
       setUsernameSuccess('Username updated successfully');
       setUserInfo({ ...userInfo, username: trimmedUsername });
@@ -217,23 +190,12 @@ function ProfilePage() {
     const newPrivacyValue = !isPublic;
     
     try {
-      const token = getUserToken();
-      const response = await fetch(API_ENDPOINTS.PRIVACY, {
+      const data = await authenticatedFetchJson(API_ENDPOINTS.PRIVACY, {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           is_public: newPrivacyValue
         })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to update privacy setting');
-      }
+      }, navigate);
 
       setIsPublic(data.is_public);
     } catch (err) {
@@ -270,29 +232,14 @@ function ProfilePage() {
     setIsUpdatingProfile(true);
 
     try {
-      const token = getUserToken();
-      if (!token) {
-        throw new Error('Not authenticated');
-      }
-
-      const response = await fetch(API_ENDPOINTS.UPDATE_PROFILE, {
+      const data = await authenticatedFetchJson(API_ENDPOINTS.UPDATE_PROFILE, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           technical_level: technicalLevel || null,
           favorite_exercise: favoriteExercise || null,
           community_preference: communityPreference || null
         })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to update profile');
-      }
+      }, navigate);
 
       setProfileSuccess('Profile updated successfully');
       // Update userInfo to reflect changes

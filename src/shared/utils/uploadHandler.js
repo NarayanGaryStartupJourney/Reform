@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from '../../config/api';
 import { parseErrorResponse, createErrorWithData, getStatusErrorMessage } from './apiErrorHandler';
+import { getUserToken } from './authStorage';
 
 /**
  * Parses upload-specific error response from XMLHttpRequest.
@@ -94,8 +95,14 @@ export const uploadVideo = async ({ file, exercise, notes = null, onProgress }) 
 
     xhr.open('POST', API_ENDPOINTS.UPLOAD_VIDEO);
     // Use withCredentials to send httpOnly cookies automatically
-    // No need to manually set Authorization header - cookies are sent automatically
     xhr.withCredentials = true;
+    
+    // Also set Authorization header as fallback for browsers that block third-party cookies
+    const token = getUserToken();
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    }
+    
     xhr.send(formData);
   });
 };
