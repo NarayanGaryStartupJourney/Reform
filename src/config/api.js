@@ -23,6 +23,9 @@ export const API_ENDPOINTS = {
   CHANGE_PASSWORD: `${API_URL}/api/auth/change-password`,
   UPDATE_USERNAME: `${API_URL}/api/auth/update-username`,
   UPDATE_PROFILE: `${API_URL}/api/auth/update-profile`,
+  SEND_VERIFICATION_EMAIL: `${API_URL}/api/auth/send-verification-email`,
+  VERIFY_EMAIL: `${API_URL}/api/auth/verify-email`,
+  VERIFICATION_STATUS: `${API_URL}/api/auth/verification-status`,
   // Social feed endpoints
   FEED: `${API_URL}/api/social/feed`,
   POSTS: `${API_URL}/api/social/posts`,

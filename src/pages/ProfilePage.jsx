@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config/api';
 import { getUserToken } from '../shared/utils/authStorage';
 import { activateTokens } from '../shared/utils/tokenActivation';
 import PageHeader from '../shared/components/layout/PageHeader';
 import PageContainer from '../shared/components/layout/PageContainer';
+import VerificationBanner from '../shared/components/verification/VerificationBanner';
 import '../shared/styles/AnalysisSkeleton.css';
 import './DashboardPage.css';
 
 function ProfilePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [verificationSuccess, setVerificationSuccess] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -116,7 +119,15 @@ function ProfilePage() {
   useEffect(() => {
     fetchUserInfo();
     checkTokenActivationStatus();
-  }, [fetchUserInfo, checkTokenActivationStatus]);
+    
+    // Check for verification success message
+    if (searchParams.get('verified') === 'true') {
+      setVerificationSuccess(true);
+      setTimeout(() => setVerificationSuccess(false), 5000);
+      // Remove query param from URL
+      navigate('/profile', { replace: true });
+    }
+  }, [fetchUserInfo, checkTokenActivationStatus, searchParams, navigate]);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -396,9 +407,63 @@ function ProfilePage() {
           </div>
         </header>
 
+        {/* Verification Banner */}
+        {userInfo && !userInfo.is_verified && (
+          <VerificationBanner onVerificationComplete={fetchUserInfo} />
+        )}
+
+        {/* Verification Success Message */}
+        {verificationSuccess && (
+          <div style={{
+            background: 'rgba(16, 185, 129, 0.1)',
+            border: '2px solid var(--accent-green)',
+            borderRadius: '12px',
+            padding: '16px',
+            margin: '20px 0',
+            color: 'var(--accent-green)',
+            textAlign: 'center'
+          }}>
+            ✅ Email verified successfully! You can now use all social features.
+          </div>
+        )}
+
         <div className="skeleton-grid">
           <article className="skeleton-card">
             <h3>Account Information</h3>
+            
+            {/* Email Verification Status */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                color: 'var(--text-secondary)',
+                fontSize: '0.9rem',
+                marginBottom: '8px'
+              }}>
+                Email Verification Status
+              </label>
+              <div style={{
+                padding: '12px',
+                background: userInfo?.is_verified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)'}`,
+                borderRadius: '8px',
+                color: userInfo?.is_verified ? 'var(--accent-green)' : 'var(--accent-orange)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                {userInfo?.is_verified ? '✅ Verified' : '❌ Unverified'}
+                {!userInfo?.is_verified && (
+                  <span style={{ fontSize: '0.85rem', marginLeft: 'auto' }}>
+                    <a 
+                      href="/verify-email" 
+                      style={{ color: 'var(--accent-green)', textDecoration: 'underline' }}
+                    >
+                      Verify now
+                    </a>
+                  </span>
+                )}
+              </div>
+            </div>
 
         <div style={{ marginBottom: '20px' }}>
           <label style={{

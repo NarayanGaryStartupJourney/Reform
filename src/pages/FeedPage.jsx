@@ -4,6 +4,7 @@ import PageHeader from '../shared/components/layout/PageHeader';
 import PageContainer from '../shared/components/layout/PageContainer';
 import PostCard from '../shared/components/social/PostCard';
 import CreatePostModal from '../shared/components/modals/CreatePostModal';
+import VerificationBanner from '../shared/components/verification/VerificationBanner';
 import { API_ENDPOINTS } from '../config/api';
 import { getUserToken } from '../shared/utils/authStorage';
 import '../shared/styles/AnalysisSkeleton.css';
@@ -19,6 +20,7 @@ const FeedPage = () => {
   const [offset, setOffset] = useState(0);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [isVerified, setIsVerified] = useState(true);
   const limit = 20;
 
   useEffect(() => {
@@ -40,6 +42,7 @@ const FeedPage = () => {
         const userData = await response.json();
         setCurrentUserId(userData.id);
         setCurrentUserEmail(userData.email);
+        setIsVerified(userData.is_verified || false);
       }
     } catch (err) {
       console.warn('Failed to fetch current user:', err);
@@ -139,6 +142,14 @@ const FeedPage = () => {
             </button>
           </div>
         </header>
+
+        {/* Verification Banner */}
+        {!isVerified && (
+          <VerificationBanner onVerificationComplete={() => {
+            fetchCurrentUser();
+            loadFeed(true);
+          }} />
+        )}
 
         <div className="feed-content">
           {error && (

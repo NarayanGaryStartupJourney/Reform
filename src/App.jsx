@@ -13,6 +13,7 @@ import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 import Footer from './shared/components/layout/Footer';
 import './App.css';
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
       <Footer />
