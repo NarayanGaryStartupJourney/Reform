@@ -93,10 +93,9 @@ export const uploadVideo = async ({ file, exercise, notes = null, onProgress }) 
     });
 
     xhr.open('POST', API_ENDPOINTS.UPLOAD_VIDEO);
-    const token = localStorage.getItem('userToken');
-    if (token) {
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-    }
+    // Use withCredentials to send httpOnly cookies automatically
+    // No need to manually set Authorization header - cookies are sent automatically
+    xhr.withCredentials = true;
     xhr.send(formData);
   });
 };
