@@ -4,6 +4,7 @@ import PageHeader from '../shared/components/layout/PageHeader';
 import PageContainer from '../shared/components/layout/PageContainer';
 import ScoreBreakdown from '../shared/components/ScoreBreakdown';
 import AnglePlot from '../shared/components/charts/AnglePlot';
+import { normalizeAnalysisResults, getFpsFromAnalysis, getComponentScores } from '../shared/utils/analysisDataNormalizer';
 
 const DashboardAnalyze = () => {
   const [analysisResults, setAnalysisResults] = useState(null);
@@ -47,7 +48,9 @@ const DashboardAnalyze = () => {
   }, []);
 
   const handleAnalysisComplete = (data) => {
-    setAnalysisResults(data);
+    // Normalize the analysis data to ensure consistent format
+    const normalized = normalizeAnalysisResults(data);
+    setAnalysisResults(normalized);
   };
 
   const handleToggleExpanded = (key) => {
@@ -79,8 +82,8 @@ const DashboardAnalyze = () => {
     }
   };
 
-  const finalScoreData = analysisResults?.form_analysis?.final_score;
-  const componentScores = finalScoreData?.component_scores || {};
+  // Use the normalizer's getComponentScores function for consistency
+  const componentScores = getComponentScores(analysisResults?.form_analysis);
 
   return (
     <PageContainer>
@@ -143,7 +146,7 @@ const DashboardAnalyze = () => {
                 frameCount={analysisResults.frame_count}
                 expandedStates={expandedStates}
                 onToggleExpanded={handleToggleExpanded}
-                fps={analysisResults.calculation_results?.fps || analysisResults.fps || null}
+                fps={getFpsFromAnalysis(analysisResults)}
               />
               
               {analysisResults.calculation_results?.angles_per_frame && (
@@ -164,7 +167,7 @@ const DashboardAnalyze = () => {
                       anglesPerFrame={analysisResults.calculation_results.angles_per_frame}
                       frameCount={analysisResults.frame_count}
                       squatPhases={analysisResults.squat_phases}
-                      fps={analysisResults.calculation_results?.fps || analysisResults.fps || 30}
+                      fps={getFpsFromAnalysis(analysisResults)}
                       calculationResults={analysisResults.calculation_results}
                     />
                   </div>

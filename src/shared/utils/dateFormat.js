@@ -70,8 +70,7 @@ export const formatDate = (dateValue) => {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
-      minute: '2-digit',
-      timeZoneName: 'short'
+      minute: '2-digit'
     });
   }
   
@@ -87,14 +86,13 @@ export const formatDate = (dateValue) => {
     return `${diffMinutes}m ago`;
   }
   
-  // More than 30 minutes: full date/time with timezone
+  // More than 30 minutes: full date/time (timezone conversion preserved, abbreviation removed)
   return date.toLocaleString(undefined, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
-    minute: '2-digit',
-    timeZoneName: 'short'
+    minute: '2-digit'
   });
 };
 
@@ -109,7 +107,7 @@ export const formatDate = (dateValue) => {
  * @returns {string} Formatted date string ("N/A" if invalid)
  */
 export const formatDateTime = (dateValue, options = {}) => {
-  const { includeTime = true, includeTimezone = true } = options;
+  const { includeTime = true } = options;
   
   const date = parseUTCDate(dateValue);
   if (!date) {
@@ -128,10 +126,8 @@ export const formatDateTime = (dateValue, options = {}) => {
     formatOptions.minute = '2-digit';
   }
   
-  if (includeTimezone) {
-    formatOptions.timeZoneName = 'short';
-  }
-  
+  // Timezone conversion is preserved (automatic via toLocaleString),
+  // but timezone abbreviation is removed from display
   return date.toLocaleString(undefined, formatOptions);
 };
 

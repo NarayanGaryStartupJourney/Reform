@@ -1,15 +1,12 @@
-// FPPA Plot Component
-// Reusable component for displaying FPPA (Frontal Plane Projection Angle) over time
-
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { getFPPAChartOptions, createFrameIndices } from '../../utils/chartConfig';
 import { getVideoMetadata } from '../../utils/videoMetadata';
+import { padArrayToLength } from '../../utils/plotDataUtils';
 
 function FPPAPlot({ fppaPerFrame, fps = 30, calculationResults = null }) {
   if (!fppaPerFrame || fppaPerFrame.length === 0) return null;
 
-  // Get video metadata using centralized function
   const metadata = getVideoMetadata({
     calculationResults,
     fpsOverride: fps,
@@ -18,14 +15,14 @@ function FPPAPlot({ fppaPerFrame, fps = 30, calculationResults = null }) {
   const { fps: actualFps, totalFrames } = metadata;
 
   const frameLabels = createFrameIndices(totalFrames);
-  const validData = fppaPerFrame.map((val) => val !== null ? val : null);
+  const paddedFppaData = padArrayToLength(fppaPerFrame, totalFrames);
   
   const chartData = {
     labels: frameLabels,
     datasets: [
       {
         label: 'FPPA (180° = neutral)',
-        data: validData,
+        data: paddedFppaData,
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         tension: 0.1,
@@ -33,7 +30,7 @@ function FPPAPlot({ fppaPerFrame, fps = 30, calculationResults = null }) {
       },
       {
         label: '180° (neutral)',
-        data: Array(fppaPerFrame.length).fill(180),
+        data: Array(totalFrames).fill(180),
         borderColor: 'rgb(128, 128, 128)',
         backgroundColor: 'rgba(128, 128, 128, 0.1)',
         borderDash: [5, 5],
@@ -42,7 +39,7 @@ function FPPAPlot({ fppaPerFrame, fps = 30, calculationResults = null }) {
     ]
   };
 
-  const frameInterval = 60; // Configurable interval for tick display
+  const frameInterval = 60;
 
   return <Line data={chartData} options={getFPPAChartOptions(actualFps, frameInterval, metadata)} />;
 }

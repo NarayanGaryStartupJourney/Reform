@@ -7,6 +7,8 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
+  BarController,
   Title,
   Tooltip,
   Legend
@@ -19,6 +21,8 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
+  BarController,
   Title,
   Tooltip,
   Legend,
@@ -55,7 +59,15 @@ function createFrameTickFormatter(frameInterval = 60, fps = 30) {
     if (Number.isNaN(frameNumber)) return '';
     
     if (frameNumber % frameInterval === 0) {
-      return (frameNumber / fps).toString();
+      const timeInSeconds = frameNumber / fps;
+      // Format to show whole numbers without decimal, otherwise 1 decimal place
+      // Use a more lenient tolerance (0.01) to account for floating point precision
+      // when fps is not a whole number (e.g., 29.97 fps)
+      const rounded = Math.round(timeInSeconds);
+      if (Math.abs(timeInSeconds - rounded) < 0.01) {
+        return rounded.toString();
+      }
+      return timeInSeconds.toFixed(1);
     }
     return '';
   };
@@ -86,9 +98,20 @@ function createAfterBuildTicks(frameInterval = 60, metadata = null, fps = null) 
     const newTicks = [];
     for (let frameNumber = 0; frameNumber <= totalFrames; frameNumber += actualFrameInterval) {
       if (labels.includes(frameNumber)) {
+        const timeInSeconds = frameNumber / actualFps;
+        // Format to show whole numbers without decimal, otherwise 1 decimal place
+        // Use a more lenient tolerance (0.01) to account for floating point precision
+        // when fps is not a whole number (e.g., 29.97 fps)
+        const rounded = Math.round(timeInSeconds);
+        let timeLabel;
+        if (Math.abs(timeInSeconds - rounded) < 0.01) {
+          timeLabel = rounded.toString();
+        } else {
+          timeLabel = timeInSeconds.toFixed(1);
+        }
         newTicks.push({
           value: frameNumber,
-          label: (frameNumber / actualFps).toString()
+          label: timeLabel
         });
       }
     }

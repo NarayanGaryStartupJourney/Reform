@@ -1,15 +1,12 @@
-// Asymmetry Plot Component
-// Reusable component for displaying asymmetry plots (Torso, Quad, Ankle)
-
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { getAsymmetryChartOptions, createZeroLine, createFrameIndices } from '../../utils/chartConfig';
 import { getVideoMetadata } from '../../utils/videoMetadata';
+import { padArrayToLength, calculateChartMinWidth } from '../../utils/plotDataUtils';
 
 function AsymmetryPlot({ asymmetryData, frameCount, label, color, backgroundColor, fps = 30, calculationResults = null }) {
   if (!asymmetryData || asymmetryData.length === 0) return null;
 
-  // Get video metadata using centralized function
   const metadata = getVideoMetadata({
     calculationResults,
     frameCount,
@@ -20,13 +17,14 @@ function AsymmetryPlot({ asymmetryData, frameCount, label, color, backgroundColo
 
   const frameLabels = createFrameIndices(totalFrames);
   const zeroLine = createZeroLine(frameLabels.length);
+  const paddedAsymmetryData = padArrayToLength(asymmetryData, totalFrames);
 
   const chartData = {
     labels: frameLabels,
     datasets: [
       {
         label: label,
-        data: asymmetryData,
+        data: paddedAsymmetryData,
         borderColor: color || 'rgb(75, 192, 192)',
         backgroundColor: backgroundColor || 'rgba(75, 192, 192, 0.2)',
         tension: 0.1
@@ -45,10 +43,8 @@ function AsymmetryPlot({ asymmetryData, frameCount, label, color, backgroundColo
     ]
   };
 
-  const frameInterval = 60; // Configurable interval for tick display
-
-  // Calculate minimum width based on number of frames (approximately 3px per frame for better readability)
-  const minWidth = Math.max(totalFrames * 3, 1200);
+  const frameInterval = 60;
+  const minWidth = calculateChartMinWidth(totalFrames);
 
   return (
     <div style={{ 
