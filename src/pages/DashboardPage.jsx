@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getProgressMetrics } from '../shared/utils/analysisApi';
 import { useRequireAuth } from '../shared/utils/useRequireAuth';
@@ -14,9 +14,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useRequireAuth(navigate, fetchMetrics);
-
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -29,7 +27,9 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useRequireAuth(navigate, fetchMetrics);
 
   const getScoreColor = (score) => {
     if (score >= 90) return 'var(--score-excellent)';

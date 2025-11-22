@@ -20,8 +20,7 @@ export function useRequireAuth(navigate, callback = null) {
     if (callback) {
       callback();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate]); // Only depend on navigate, callback should be stable via useCallback
+  }, [navigate, callback]); // Include callback in dependencies
   
   return isUserLoggedIn();
 }
