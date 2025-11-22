@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Line, Bar } from 'react-chartjs-2';
 import '../shared/utils/chartConfig'; // Ensure Chart.js is registered
@@ -16,7 +16,7 @@ const ProgressDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -29,7 +29,7 @@ const ProgressDashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useRequireAuth(navigate, fetchMetrics);
 
