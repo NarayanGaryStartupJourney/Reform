@@ -227,7 +227,7 @@ const ProfileMenu = () => {
             Social Feed
           </a>
           <a
-            href="#"
+            href="/analyses"
             role="menuitem"
             style={{
               textDecoration: 'none',
@@ -243,6 +243,11 @@ const ProfileMenu = () => {
             }}
             onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.05)'}
             onMouseLeave={(e) => e.target.style.background = 'transparent'}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+              window.location.href = '/analyses';
+            }}
           >
             History
           </a>

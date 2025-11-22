@@ -1,0 +1,50 @@
+/* Analysis History Page Styles */
+
+.analysis-filters {
+  margin-bottom: 24px;
+}
+
+.analysis-filters label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.analysis-filters input,
+.analysis-filters select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.analysis-filters input:focus,
+.analysis-filters select:focus {
+  outline: none;
+  border-color: var(--accent-green);
+}
+
+/* Split view layout - scoped to Analysis History page only */
+.analysis-history-page .skeleton-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+@media (max-width: 1024px) {
+  .analysis-history-page .skeleton-grid {
+    flex-direction: column;
+  }
+  
+  .analysis-history-page .skeleton-grid > article {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+  }
+}
+

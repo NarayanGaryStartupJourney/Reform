@@ -14,6 +14,9 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
+import AnalysisHistoryPage from './pages/AnalysisHistoryPage';
+import AnalysisDetailPage from './pages/AnalysisDetailPage';
+import ProgressDashboardPage from './pages/ProgressDashboardPage';
 import Footer from './shared/components/layout/Footer';
 import './App.css';
 
@@ -35,6 +38,9 @@ function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/analyses" element={<AnalysisHistoryPage />} />
+        <Route path="/analyses/:analysisId" element={<AnalysisDetailPage />} />
+        <Route path="/progress" element={<ProgressDashboardPage />} />
         <Route path="*" element={<LandingPage />} />
       </Routes>
       <Footer />

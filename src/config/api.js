@@ -45,6 +45,10 @@ export const API_ENDPOINTS = {
   TOKEN_BALANCE: `${API_URL}/api/tokens/balance`,
   TOKEN_TRANSACTIONS: `${API_URL}/api/tokens/transactions`,
   TOKEN_ACTIVATE: `${API_URL}/api/tokens/activate`,
+  // Analysis endpoints
+  ANALYSES: `${API_URL}/api/analyses`,
+  ANALYSIS: (analysisId) => `${API_URL}/api/analyses/${analysisId}`,
+  ANALYSIS_PROGRESS: `${API_URL}/api/analyses/progress/metrics`,
   // Contact endpoint
   CONTACT_SUBMIT: `${API_URL}/api/contact/submit`
 };

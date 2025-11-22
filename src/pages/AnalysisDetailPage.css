@@ -1,0 +1,18 @@
+/* Analysis Detail Page Styles */
+
+.analysis-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .analysis-layout {
+    flex-direction: column;
+  }
+  
+  .analysis-layout > div {
+    margin-left: 0 !important;
+  }
+}
+
